@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('numero_id');
             $table->string('nombre');
             $table->bigInteger('tipo')->unsigned();
-            $table->foreign('tipo')->references('id_tipo')->on('tipos_tabla');
+            $table->foreign('tipo')->references('id_tipo')->on('tipos');
             $table->string('posicion');
             $table->datetime('ingreso');
             $table->datetime('salida');
