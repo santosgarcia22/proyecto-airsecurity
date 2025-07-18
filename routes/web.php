@@ -14,8 +14,9 @@ use App\Http\Controllers\VueloFrontendController;
 use App\Http\Controllers\tipoController;
 use App\Http\Controllers\UsuarioAppController;
 use App\Http\Controllers\ChatFlowController;
-
+use App\Http\Controllers\UbicacionFrontendController;
 use App\Http\Controllers\Backend\Dashboard\DashboardController;
+
 // --- LOGIN ---
 Route::get('/', [LoginController::class,'index'])->name('login');
 Route::post('/admin/login', [LoginController::class, 'login']);
@@ -72,8 +73,6 @@ Route::put('/admin/tipo/update/{tipo}', [tipoController::class, 'update'])->name
 Route::delete('/admin/tipo/{tipo}', [tipoController::class, 'destroy'])->name('admin.tipo.destroy');
 
 
-
-
 // --- ROLES ---
 
 Route::get('/admin/roles/index', [RolesController::class,'index'])->name('admin.roles.index');
@@ -85,6 +84,9 @@ Route::post('/admin/roles/permiso/agregar', [RolesController::class, 'agregarPer
 Route::get('/admin/roles/permisos/lista', [RolesController::class,'listaTodosPermisos']);
 Route::get('/admin/roles/permisos-todos/tabla', [RolesController::class,'tablaTodosPermisos']);
 Route::post('/admin/roles/borrar-global', [RolesController::class, 'borrarRolGlobal']);
+
+// --- ACCESO A GEOLOCALIZACIÓN
+Route::get('/ubicaciones/mapa', [UbicacionFrontendController::class, 'mapa'])->name('ubicaciones.mapa');
 
 // --- PERMISOS A USUARIOS ---
 

@@ -166,6 +166,28 @@
                 </li>
                 @endcan
 
+                <!-- CONTROL DE ACCESO -->
+                @can('sidebar.roles.y.permisos')
+                <li class="nav-item">
+                    <a href="#" class="nav-link nav-">
+                        <i class="fas fa-door-open"></i> <!-- icono sólido, puerta abierta para acceso -->
+                        <p>
+                            Geolozalización
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('ubicaciones.mapa') }}" target="frameprincipal" class="nav-link"
+                                onclick="guardarUltimaVista(event, this.href)">
+                                <i class="far fa-circle nav-icon"></i> Mapa
+                            </a>
+
+                        </li>
+                    </ul>
+                </li>
+                @endcan
+
                 <!-- ROLES Y PERMISO -->
                 @can('sidebar.roles.y.permisos')
                 <li class="nav-item">
