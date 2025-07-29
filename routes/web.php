@@ -25,7 +25,7 @@ Route::post('/admin/logout', [LoginController::class, 'logout'])->name('admin.lo
 Route::get('/admin/usuariosapp/index', [UsuarioAppController::class, 'index'])->name('admin.usuariosapp.index');
 Route::post('/admin/usuariosapp/nuevo', [UsuarioAppController::class, 'store'])->name('admin.usuariosapp.store');
 Route::post('/admin/usuariosapp/info', [UsuarioAppController::class, 'info']);
-Route::post('/admin/usuariosapp/editar', [UsuarioAppController::class, 'update']);
+Route::put('/admin/usuariosapp/update/{id}', [UsuarioAppController::class, 'update'])->name('admin.usuariosapp.update');
 Route::put('/admin/usuariosapp/toggle/{id}', [UsuarioAppController::class, 'toggleActivo']);
 
 //CHATBOT
