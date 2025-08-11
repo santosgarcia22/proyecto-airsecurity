@@ -218,8 +218,8 @@ document.addEventListener('DOMContentLoaded', function() {
             scales: {
                 y: {
                     beginAtZero: true,
-                    ticks: { color: '#1976d2', font: { weight: 'bold' } },
-                    grid: { color: '#e3f2fd' }
+                    ticks: { color: '#623ba0ff', font: { weight: 'bold' } },
+                    grid: { color: '#c5df2dff' }
                 },
                 x: {
                     ticks: { color: '#1976d2', font: { weight: 'bold' } },
@@ -409,7 +409,7 @@ function actualizarTabla() {
 </script>
 
 
-<!-- script de la grafica -->
+<!-- script de la grafica 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     axios.get('/admin/grafico-logins')
@@ -425,7 +425,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     datasets: [{
                         label: 'Inicios de sesión',
                         data: data,
-                        backgroundColor: 'rgba(7, 192, 10, 0.6)',
+                        backgroundColor: 'rgba(255, 32, 47, 0.6)',
                         borderColor: 'rgba(57, 155, 255, 1)',
                         borderWidth: 1
                     }]
@@ -446,7 +446,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 });
-</script>
+</script>-->
 
 
 <script src="{{ asset('js/graficoLogins.js') }}"></script>

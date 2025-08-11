@@ -16,17 +16,32 @@ use App\Http\Controllers\UsuarioAppController;
 use App\Http\Controllers\ChatFlowController;
 use App\Http\Controllers\UbicacionFrontendController;
 use App\Http\Controllers\Backend\Dashboard\DashboardController;
+use Illuminate\Http\Request;
+use App\Http\Controllers\api\AccesoApiController;
+use App\Http\Controllers\ReportController;
+
+
 
 // --- LOGIN ---
 Route::get('/', [LoginController::class,'index'])->name('login');
 Route::post('/admin/login', [LoginController::class, 'login']);
 Route::post('/admin/logout', [LoginController::class, 'logout'])->name('admin.logout');
 
+
+Route::post('/test-store', function(Request $request) {
+    dd($request->all());
+});
+
+
+//ruta de app pa exportar excel 
+Route::get('/exportar-accesos', [AccesoApiController::class, 'exportarExcel']);
+
+
 // Usuarios App
 Route::get('/admin/usuariosapp/index', [UsuarioAppController::class, 'index'])->name('admin.usuariosapp.index');
-Route::post('/admin/usuariosapp/nuevo', [UsuarioAppController::class, 'store'])->name('admin.usuariosapp.store');
+Route::post('/admin/usuariosapp/store', [UsuarioAppController::class, 'store'])->name('admin.usuariosapp.store');
 Route::post('/admin/usuariosapp/info', [UsuarioAppController::class, 'info']);
-Route::post('/admin/usuariosapp/editar', [UsuarioAppController::class, 'update']);
+Route::put('/admin/usuariosapp/update/{id}', [UsuarioAppController::class, 'update'])->name('admin.usuariosapp.update');
 Route::put('/admin/usuariosapp/toggle/{id}', [UsuarioAppController::class, 'toggleActivo']);
 
 //CHATBOT
@@ -107,3 +122,30 @@ Route::post('/admin/editar-perfil/actualizar', [PerfilController::class, 'editar
 Route::get('sin-permisos', [ControlController::class,'indexSinPermiso'])->name('no.permisos.index');
 
 Route::get('/admin/dashboard', [DashboardController::class,'vistaDashboard'])->name('admin.dashboard.index');
+
+
+//RUTAS PARA LOS REPORTES PFD
+Route::get('\reporte', [ReportController::class,'ReporteUno'])->name('admin.reporte.uno');
+
+Route::get('/reportes', [ReportController::class, 'vistaPanelReportes'])->name('reportes.panel');
+//rutas ya agregadas pa despues cambiar # en las cards panel reporte
+Route::get('/reportes/accesos', [ReportController::class, 'reporteAccesos'])->name('reportes.accesos');
+Route::get('/reportes/accesos/pdf', [ReportController::class, 'reporteAccesosPdf'])->name('reportes.accesos.pdf');
+Route::get('/reportes/accesos/excel', [ReportController::class, 'reporteAccesosExcel'])->name('reportes.accesos.excel');
+Route::get('/reporte-accesos/buscar', [ReportController::class, 'buscarAccesos'])->name('reportes.accesos.buscar');
+
+
+Route::get('/reportes/tipos', [ReportController::class, 'reporteTipos'])->name('reportes.tipos');
+Route::get('/reportes/tipos/buscar', [ReportController::class, 'buscarTipos'])->name('reportes.tipos.buscar');
+Route::get('/reportes/tipos/pdf', [ReportController::class, 'exportarTiposPDF'])->name('reportes.tipos.pdf');
+Route::get('/reportes/tipos/excel', [ReportController::class, 'exportarTiposExcel'])->name('reportes.tipos.excel');
+
+
+Route::get('/reportes/vuelos', [ReportController::class, 'reporteVuelos'])->name('reportes.vuelos');
+Route::get('/reportes/vuelos/buscar', [ReportController::class, 'buscarVuelos'])->name('reportes.vuelos.buscar');
+Route::get('/reportes/vuelos/pdf', [ReportController::class, 'exportarVuelosPDF'])->name('reportes.vuelos.pdf');
+Route::get('/reportes/vuelos/excel', [ReportController::class, 'exportarVuelosExcel'])->name('reportes.vuelos.excel');
+
+
+Route::get('/reportes/ubicaciones', [ReportController::class, 'reporteUbicaciones'])->name('reportes.ubicaciones');
+Route::get('/reportes/usuariosapp', [ReportController::class, 'reporteUsuariosApp'])->name('reportes.usuariosapp');

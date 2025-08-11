@@ -38,3 +38,5 @@ Route::post('login-app',
  // endpoint para conectar a open ai una api
 
  Route::post('/chatgpt', [ChatGPTController::class, 'responder']);
+
+ Route::get('exportar-accesos', [AccesoApiController::class, 'exportarExcel']);

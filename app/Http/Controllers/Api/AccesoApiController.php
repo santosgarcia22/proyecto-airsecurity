@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\acceso;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\AccesosExport;
 
 class AccesoApiController extends Controller
 {
@@ -61,5 +63,13 @@ class AccesoApiController extends Controller
             'id' => $nuevo->numero_id
         ], 201);
     }
+
+
+    public function exportarExcel()
+{
+    return Excel::download(new AccesosExport, 'accesos.xlsx');
+}
+
+
 
 }
