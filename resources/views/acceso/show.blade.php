@@ -154,6 +154,11 @@
                     <a href="{{ route('admin.accesos.create') }}" class="btn btn-outline-primary btn-sm ms-auto">
                         <i class="bi bi-pencil-square"></i> Nuevo Acceso
                     </a>
+
+                    <a href="{{ route('admin.reporte.uno') }}" target="_blank"
+                        class="btn btn-outline-primary btn-sm ms-auto">
+                        <i class="bi bi-pencil-square"></i> Reporte Acceso pdf
+                    </a>
                 </div>
 
                 <div class="table-responsive">

@@ -24,7 +24,8 @@ class UsuarioAppController extends Controller
         });
     }
 
-   $usuarios = $query->orderBy('id_usuario', 'desc')->get();
+    // Paginación simple, 10 por página
+    $usuarios = $query->orderBy('id_usuario', 'desc')->paginate(10);
 
 
     return view('usuariosapp.index', compact('usuarios'));
@@ -33,7 +34,6 @@ class UsuarioAppController extends Controller
     public function store(Request $request)
 {
     try {
-        // validaciones básicas
         $request->validate([
             'nombre_completo' => 'required|max:100',
             'usuario' => 'required|max:50|unique:usuarios_app,usuario',
@@ -49,21 +49,16 @@ class UsuarioAppController extends Controller
             'activo' => 1
         ]);
 
-        return redirect()->back()->with('success', 'Usuario creado correctamente.');
-
+        return response()->json(['success' => true], 200);
     } catch (QueryException $e) {
         if ($e->errorInfo[1] == 1062) {
-            return redirect()->back()->with('error', 'El usuario o correo ya están registrados.');
+            return response()->json(['error' => 'El usuario o correo ya están registrados.'], 422);
         }
 
-        return redirect()->back()->with('error', 'Ocurrió un error al guardar el usuario.');
+        return response()->json(['error' => 'Ocurrió un error al guardar el usuario.'], 500);
     }
 }
-    public function show(string $id)
-    {
-        $usuario = UsuarioApp::findOrFail($id);
-        return response()->json($usuario);
-    }
+
 
     public function update(Request $request, $id)
     {

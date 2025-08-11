@@ -213,7 +213,7 @@
                                 <p>Usuario</p>
                             </a>
                         </li>
-                         <li class="nav-item">
+                        <li class="nav-item">
                             <a href="{{ route('admin.usuariosapp.index') }}" target="frameprincipal" class="nav-link"
                                 onclick="guardarUltimaVista(event, this.href)">
                                 <i class="far fa-circle nav-icon"></i>
@@ -230,5 +230,16 @@
 
             </ul>
         </nav>
+
+        <div class="p-3">
+            <a href="{{ route('reportes.panel') }}" target="frameprincipal" class="btn btn-block btn-outline-light"
+                style="border-color: #17a2b8; color: #17a2b8;" onclick="guardarUltimaVista(event, this.href)">
+                📊 Reportes
+            </a>
+        </div>
+
+
+
     </div>
+
 </aside>

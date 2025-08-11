@@ -1,7 +1,6 @@
 @extends('backend.menus.superior')
 
 @section('content-admin-css')
-<!-- Estilos DataTables y Toastr desde CDN -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap4.min.css" />
 <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap4.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
@@ -12,6 +11,23 @@
     background: rgb(57, 155, 255) !important;
     color: white !important;
     border-radius: 8px 8px 0 0;
+}
+
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+html, body {
+    overflow-x: hidden;
+    height: 100vh;
+}
+
+
+
+body {
+    padding-right: 0 !important;
+    /* evita doble scroll por padding-right de bootstrap/modal */
 }
 
 .table td,
@@ -47,37 +63,40 @@
             </div>
             @endif
 
-            <table id="tablaUsuariosApp" class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Usuario</th>
-                        <th>Email</th>
-                        <th>Nombre Completo</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($usuarios as $item)
-                    <tr>
-                        <td>{{ $item->id_usuario }}</td>
-                        <td>{{ $item->usuario }}</td>
-                        <td>{{ $item->email }}</td>
-                        <td>{{ $item->nombre_completo }}</td>
-                        <td>
-                            <span class="badge {{ $item->activo ? 'badge-success' : 'badge-danger' }}">
-                                {{ $item->activo ? 'Activo' : 'Inactivo' }}
-                            </span>
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-info" data-toggle="modal"
-                                data-target="#modalEditar{{ $item->id_usuario }}">Editar</button>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <div class="card-body table-responsive">
+                <table id="tablaUsuariosApp" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Email</th>
+                            <th>Nombre Completo</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($usuarios as $item)
+                        <tr>
+                            <td>{{ $item->id_usuario }}</td>
+                            <td>{{ $item->usuario }}</td>
+                            <td>{{ $item->email }}</td>
+                            <td>{{ $item->nombre_completo }}</td>
+                            <td>
+                                <span class="badge {{ $item->activo ? 'badge-success' : 'badge-danger' }}">
+                                    {{ $item->activo ? 'Activo' : 'Inactivo' }}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-info" data-toggle="modal"
+                                    data-target="#modalEditar{{ $item->id_usuario }}">Editar</button>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
         </div>
     </div>
 </div>
@@ -85,7 +104,7 @@
 {{-- Modal Agregar --}}
 <div class="modal fade" id="modalAgregarApp">
     <div class="modal-dialog">
-        <form method="POST" action="{{ route('admin.usuariosapp.store') }}">
+        <form id="formNuevoUsuarioApp">
             @csrf
             <div class="modal-content">
                 <div class="modal-header">
@@ -96,18 +115,34 @@
                     <div class="form-group">
                         <label>Nombre Completo</label>
                         <input type="text" name="nombre_completo" class="form-control" required>
+
+                        @error('nombre_completo')
+                        <span class="text-danger">{{ $message }}</span>
+                        @enderror
                     </div>
                     <div class="form-group">
                         <label>Usuario</label>
                         <input type="text" name="usuario" class="form-control" required>
+                        @error('usuario')
+                        <span class="text-danger">{{ $message }}</span>
+                        @enderror
+
                     </div>
                     <div class="form-group">
                         <label>Email</label>
                         <input type="email" name="email" class="form-control" required>
+                        @error('email')
+                        <span class="text-danger">{{ $message }}</span>
+                        @enderror
+
                     </div>
                     <div class="form-group">
                         <label>Contraseña</label>
                         <input type="password" name="password" class="form-control" required>
+                        @error('password')
+                        <span class="text-danger">{{ $message }}</span>
+                        @enderror
+
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -194,6 +229,58 @@ $(document).ready(function() {
             [0, 'desc']
         ]
     });
+
+
+
+
+    // Enviar el formulario por AJAX
+    $('#formNuevoUsuarioApp').on('submit', function(e) {
+        e.preventDefault();
+
+        let form = $(this);
+        let formData = form.serialize();
+
+        $.ajax({
+            url: '{{ route("admin.usuariosapp.store") }}',
+            method: 'POST',
+            data: formData,
+            success: function(res) {
+                toastr.success("Usuario creado exitosamente");
+                $('#modalAgregarApp').modal('hide');
+                form[0].reset();
+
+                // Si deseas recargar la tabla completa:
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            },
+            error: function(xhr) {
+                if (xhr.status === 422) {
+                    let errors = xhr.responseJSON.errors;
+                    for (let campo in errors) {
+                        toastr.warning(errors[campo][0]);
+                    }
+                } else if (xhr.status === 500) {
+                    toastr.error('Error interno del servidor');
+                } else {
+                    toastr.error('Ocurrió un error inesperado');
+                }
+            }
+        });
+    });
 });
 </script>
+
+
+
+<script>
+function modalAgregarApp() {
+    $('#modalAgregarApp').modal('show');
+}
+
+</script>
+
+
+
+
 @stop

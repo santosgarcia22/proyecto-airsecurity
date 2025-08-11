@@ -73,38 +73,40 @@ class AccesoFrontendController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        //validar campos
-                $data = request()->validate([
-                'nombre' => 'required',
-                'tipo' => 'required',
-                'posicion' => 'required',
-                'ingreso' => 'required',
-                'salida' => 'required',
-                'Sicronizacion' => 'required',
-                'id' => 'required',
-                'objetos' => 'required|image|mimes:jpeg,png,jpg,gif,webp,bmp,tiff,heic|max:2048',
-                'vuelo' => 'required',
-            ],   [
-                    'objetos.mimes' => 'Solo se permiten imágenes en formato JPEG, PNG, GIF, WebP, BMP, TIFF y HEIC.',
-                    'objetos.max' => 'La imagen no debe superar los 2 MB.',
-                ]);
-            // Guardar imagen en carpeta 'public/objetos'
-                if ($request->hasFile('objetos')) {
-                    $file = $request->file('objetos');
-                    $filename = time() . '_' . $file->getClientOriginalName();
-                    $filePath = $file->storeAs('objetos', $filename, 'public');
-                    $data['objetos'] = $filePath;
-                }
-        //enviar insert
-        acceso::create($data);
 
-        //Redireccionar
+public function store(Request $request) 
+{
+    // Validar campos
+    $data = $request->validate([
+        'nombre' => 'required',
+        'tipo' => 'required',
+        'posicion' => 'required',
+        'salida' => 'required',
+        'id' => 'required',
+        'objetos' => 'required|image|mimes:jpeg,png,jpg,gif,webp,bmp,tiff,heic|max:2048',
+        'vuelo' => 'required',
+    ], [
+        'objetos.mimes' => 'Solo se permiten imágenes en formato JPEG, PNG, GIF, WebP, BMP, TIFF y HEIC.',
+        'objetos.max' => 'La imagen no debe superar los 2 MB.',
+    ]);
 
-       return redirect()->route('admin.accesos.show');
-
+    // Guardar imagen en carpeta 'public/objetos'
+    if ($request->hasFile('objetos')) {
+        $file = $request->file('objetos');
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $filePath = $file->storeAs('objetos', $filename, 'public');
+        $data['objetos'] = $filePath;
     }
+
+    // Agregar fechas automáticamente
+    $data['ingreso'] = Carbon::now();
+    $data['Sicronizacion'] = Carbon::now();
+
+    // Insertar en la base
+    acceso::create($data);
+
+    return redirect()->route('admin.accesos.show');
+}
 
     /**
      * Display the specified resource.

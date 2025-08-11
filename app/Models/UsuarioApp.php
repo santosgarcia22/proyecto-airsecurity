@@ -10,7 +10,7 @@ class UsuarioApp extends Authenticatable
     use HasFactory;
 
     protected $table = 'usuarios_app';
-    protected $primaryKey = 'id_usuario';
+    protected $primaryKey = 'id_usuario';                       
 
     protected $fillable = [
         'usuario',
