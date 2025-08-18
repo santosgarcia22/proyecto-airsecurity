@@ -17,9 +17,11 @@ class accesos_personal extends Model
         'herramientas','empresa','motivo','firma'
     ];
 
-    public function control(){
-        return $this->belongsTo(controlAero::class, 'control_id', 'id_control_aeronave');
-    }
+  public function control()
+{
+    return $this->belongsTo(\App\Models\controlAero::class,'control_id','id_control_aeronave');
+}
+
 
 
 }

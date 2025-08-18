@@ -89,6 +89,11 @@ class ControlAeronaveController extends Controller
 
         ]);
 
+
+             if ($request->hasFile('agente_firma')) {
+            $data['agente_firma'] = $request->file('agente_firma')->store('firmas', 'public');
+        }
+
         if ($request->hasFile('firma')) {
             $data['firma'] = $request->file('firma')->store('firmas', 'public');
         }

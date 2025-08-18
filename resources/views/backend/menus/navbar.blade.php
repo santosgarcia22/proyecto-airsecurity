@@ -21,7 +21,6 @@
 <!-- SweetAlert2 CDN -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<!-- <script src="{{ asset('js/alerts.js') }}"></script> -->
 
 <nav class="main-header navbar navbar-expand border-bottom navbar-dark">
     <ul class="navbar-nav">

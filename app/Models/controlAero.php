@@ -30,10 +30,9 @@ class controlAero extends Model
         ];
 
 
-       public function accesos()
+     public function accesos()
     {
-        // hasMany(ModelRelacion, foreignKey, localKey)
-        return $this->hasMany(accesos_personal::class, 'control_id', 'id_control_aeronave');
-    
+        return $this->hasMany(\App\Models\accesos_personal::class,'control_id','id_control_aeronave');
     }
+
 }
