@@ -7,7 +7,9 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\acceso;
 use App\Models\tipo;
 use App\Models\vuelo;
+use App\Models\ControlAero;
 use App\Exports\AccesosExport;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
@@ -228,35 +230,80 @@ class ReportController extends Controller
             }
 
 
+    // (Opcional) vista HTML normal en el navegador
+    public function controlAeronavePreview($id)
+    {
+        $control = ControlAero::with(['detalles'])->findOrFail($id);
+        return view('reportes.control_aeronave.pdf', [
+            'control'  => $control,
+            'detalles' => $control->detalles,
+            'maxRows'  => 32,
+            'preview'  => true
+        ]);
+    }
 
 
+ // LISTADO + FILTROS (agrupando por vuelo para no repetir)
+    public function controlAeronaveIndex(Request $request)
+    {
+        $q = controlAero::query();
 
-
-        public function reporteUno()
-        {
-            //Extraer todos los datos 
-            $data = acceso::select( 
-                "acceso.numero_id",         
-                "acceso.nombre", 
-                "acceso.tipo",   
-                "acceso.posicion",   
-                "acceso.ingreso",
-                "acceso.salida",
-                "acceso.Sicronizacion",
-                "acceso.id",
-                "acceso.objetos",
-                "acceso.vuelo"
-                    
-            )->get(); 
-        
-            // Cargar vista del reporte con la data 
-           $pdf = Pdf::loadView('reports.report1', compact('data'))->setPaper('a4', 'landscape');
-
-            return $pdf->stream('accesos.pdf', ['Attachment' => false]);
-
+        if ($request->filled('fecha_inicio') && $request->filled('fecha_fin')) {
+            $q->whereBetween('fecha', [
+                $request->input('fecha_inicio').' 00:00:00',
+                $request->input('fecha_fin').' 23:59:59',
+            ]);
         }
 
+        if ($request->filled('q')) {
+            $term = $request->input('q');
+            $q->where(function ($qq) use ($term) {
+                $qq->where('numero_vuelo', 'like', "%{$term}%")
+                   ->orWhere('origen', 'like', "%{$term}%")
+                   ->orWhere('destino', 'like', "%{$term}%")
+                   ->orWhere('matricula_operador', 'like', "%{$term}%")
+                   ->orWhere('coordinador_lider', 'like', "%{$term}%")
+                   ->orWhere('agente_nombre', 'like', "%{$term}%")
+                   // buscar también por persona:
+                   ->orWhere('nombre', 'like', "%{$term}%")
+                   ->orWhere('empresa', 'like', "%{$term}%")
+                   ->orWhere('motivo', 'like', "%{$term}%");
+            });
+        }
 
+        // Agrupamos para listar “un vuelo” por fila en pantalla
+        $data = $q->select([
+                'fecha','numero_vuelo','origen','destino',
+                'matricula_operador','coordinador_lider',
+            ])
+            ->groupBy('fecha','numero_vuelo','origen','destino','matricula_operador','coordinador_lider')
+            ->orderByDesc('fecha')
+            ->paginate(10);
 
+        return view('reportes.control_aeronave.index', compact('data'));
+    }
 
+    // PDF: toma el id, busca su vuelo y trae TODAS las filas de ese vuelo en esa fecha
+    public function controlAeronavePdf($id)
+    {
+        $base = controlAero::findOrFail($id);
+
+        $fecha = Carbon::parse($base->fecha)->toDateString();
+
+        $rows = controlAero::whereDate('fecha', $fecha)
+                ->where('numero_vuelo', $base->numero_vuelo)
+                ->orderBy('hora_entrada')
+                ->get();
+
+        $header = $rows->first() ?? $base; // para la cabecera
+        $maxRows = 32; // filas de la planilla
+
+        $pdf = Pdf::loadView('reportes.control_aeronave.pdf', [
+                    'header'  => $header,   // datos del vuelo
+                    'rows'    => $rows,     // personas
+                    'maxRows' => $maxRows,
+                ])->setPaper('letter', 'portrait');
+
+        return $pdf->stream("control_acceso_aeronave_{$header->numero_vuelo}_{$fecha}.pdf");
+    }
 }

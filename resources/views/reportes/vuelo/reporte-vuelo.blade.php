@@ -4,14 +4,27 @@
 <link href="{{ asset('css/dataTables.bootstrap4.css') }}" rel="stylesheet" />
 @stop
 
+<style>
+
+
+    .container{
+        padding: 25px;
+    }
+
+    .card{
+        padding: 25px;
+       
+    }
+</style>
+
 <div class="container">
 
     <form method="GET" action="{{ route('reportes.vuelos') }}" class="form-inline mb-3">
         <label class="mr-2">Desde:</label>
-        <input type="date" name="fecha_inicio" class="form-control mr-2" value="{{ request('fecha_inicio') }}">
+        <input style=" width: 200px ;"  type="date" name="fecha_inicio" class="form-control mr-2" value="{{ request('fecha_inicio') }}">
 
         <label class="mr-2">Hasta:</label>
-        <input type="date" name="fecha_fin" class="form-control mr-2" value="{{ request('fecha_fin') }}">
+        <input style=" width: 200px ;" type="date" name="fecha_fin" class="form-control mr-2" value="{{ request('fecha_fin') }}">
 
         <button type="submit" class="btn btn-primary mr-2">Filtrar</button>
 

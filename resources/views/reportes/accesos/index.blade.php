@@ -36,6 +36,10 @@
     display: flex;
     align-items: center;
 }
+
+.card{
+    padding: 20px;
+}
 </style>
 
 
@@ -151,79 +155,79 @@
     </div>
 
 
+</div>
+
+@extends('backend.menus.footerjs')
+@section('archivos-js')
 
 
-    @extends('backend.menus.footerjs')
-    @section('archivos-js')
+<script>
+$(document).ready(function() {
+    $('#busqueda-input').on('input', function() {
+        let query = $(this).val();
 
+        $.ajax({
+            url: "{{ route('reportes.accesos.buscar') }}",
+            type: "GET",
+            data: {
+                q: query
+            },
+            beforeSend: function() {
+                $('#loader').show(); // tu loader
+            },
+            success: function(response) {
+                $('#tabla-contenido').html(response);
+                $('#loader').hide();
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+                toastr.error('Hubo un problema al buscar los resultados.');
+                $('#loader').hide();
+            }
 
-    <script>
-    $(document).ready(function() {
-        $('#busqueda-input').on('input', function() {
-            let query = $(this).val();
-
-            $.ajax({
-                url: "{{ route('reportes.accesos.buscar') }}",
-                type: "GET",
-                data: {
-                    q: query
-                },
-                beforeSend: function() {
-                    $('#loader').show(); // tu loader
-                },
-                success: function(response) {
-                    $('#tabla-contenido').html(response);
-                    $('#loader').hide();
-                },
-                error: function(xhr, status, error) {
-                    console.error(xhr.responseText);
-                    toastr.error('Hubo un problema al buscar los resultados.');
-                    $('#loader').hide();
-                }
-
-            });
         });
     });
-    </script>
+});
+</script>
 
 
-    <script src="{{ asset('js/jquery.dataTables.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('js/dataTables.bootstrap4.js') }}" type="text/javascript"></script>
+<script src="{{ asset('js/jquery.dataTables.js') }}" type="text/javascript"></script>
+<script src="{{ asset('js/dataTables.bootstrap4.js') }}" type="text/javascript"></script>
 
-    <script src="{{ asset('js/toastr.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('js/axios.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('js/sweetalert2.all.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('js/alertaPersonalizada.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('js/select2.min.js') }}" type="text/javascript"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap4.min.js"></script>
+<script src="{{ asset('js/toastr.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('js/axios.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('js/sweetalert2.all.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('js/alertaPersonalizada.js') }}" type="text/javascript"></script>
+<script src="{{ asset('js/select2.min.js') }}" type="text/javascript"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap4.min.js"></script>
 
-    @stop
+@stop
 
-    @section('content-admin-js')
+@section('content-admin-js')
 
 
-    <script src="{{ asset('js/toastr.min.js') }}"></script>
-    <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const links = document.querySelectorAll(".pagination a");
-        links.forEach(link => {
-            link.addEventListener("click", function(e) {
-                e.preventDefault();
+<script src="{{ asset('js/toastr.min.js') }}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const links = document.querySelectorAll(".pagination a");
+    links.forEach(link => {
+        link.addEventListener("click", function(e) {
+            e.preventDefault();
 
-                // Mostrar loader
-                document.getElementById("loader").style.display = "flex";
+            // Mostrar loader
+            document.getElementById("loader").style.display = "flex";
 
-                // Redirigir con retardo de 600ms (ajustable)
-                setTimeout(() => {
-                    window.location.href = link.href;
-                }, 600); // Puedes subirlo a 800 o 1000 si quieres más suavidad
-            });
+            // Redirigir con retardo de 600ms (ajustable)
+            setTimeout(() => {
+                window.location.href = link.href;
+            }, 600); // Puedes subirlo a 800 o 1000 si quieres más suavidad
         });
     });
-    </script>
+});
+</script>
 
 
-    @stop
+@stop

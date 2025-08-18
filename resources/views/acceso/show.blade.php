@@ -30,6 +30,8 @@
     .table-responsive {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        background-color: #0f1bc5ff;
+        color: white;
     }
 
     td img {
@@ -41,6 +43,14 @@
         display: none;
     }
 }
+
+.table-responsive th {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    background-color: #1e44ecef;
+    color: white;
+}
+
 
 @media (max-width: 768px) {
     .d-flex.flex-wrap.gap-2.w-100 {
@@ -89,9 +99,6 @@
             </div>
         </div>
         @endif
-
-
-
 
         @if ($errors->has('objetos'))
         <div class="alert alert-danger">
@@ -150,15 +157,13 @@
                         </select>
 
 
-                    </form>
-                    <a href="{{ route('admin.accesos.create') }}" class="btn btn-outline-primary btn-sm ms-auto">
-                        <i class="bi bi-pencil-square"></i> Nuevo Acceso
-                    </a>
+                        <a href="{{ route('admin.accesos.create') }}" class="btn btn-outline-primary btn-sm ms-auto">
+                            <i class="bi bi-pencil-square"></i> Nuevo Acceso
+                        </a>
 
-                    <a href="{{ route('admin.reporte.uno') }}" target="_blank"
-                        class="btn btn-outline-primary btn-sm ms-auto">
-                        <i class="bi bi-pencil-square"></i> Reporte Acceso pdf
-                    </a>
+
+                    </form>
+
                 </div>
 
                 <div class="table-responsive">
