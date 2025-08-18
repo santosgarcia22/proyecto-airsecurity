@@ -19,6 +19,8 @@ use App\Http\Controllers\Backend\Dashboard\DashboardController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\api\AccesoApiController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ControlAeronaveController;
+use App\Http\Controllers\accesos_personalController;
 
 
 
@@ -26,12 +28,6 @@ use App\Http\Controllers\ReportController;
 Route::get('/', [LoginController::class,'index'])->name('login');
 Route::post('/admin/login', [LoginController::class, 'login']);
 Route::post('/admin/logout', [LoginController::class, 'logout'])->name('admin.logout');
-
-
-Route::post('/test-store', function(Request $request) {
-    dd($request->all());
-});
-
 
 //ruta de app pa exportar excel 
 Route::get('/exportar-accesos', [AccesoApiController::class, 'exportarExcel']);
@@ -65,6 +61,31 @@ Route::get('/admin/acceso/show', [AccesoFrontendController::class, 'index'])->na
 Route::get('/admin/acceso/edit/{acceso}', [AccesoFrontendController::class, 'edit'])->name('admin.accesos.edit');
 Route::put('/admin/acceso/update/{acceso}', [AccesoFrontendController::class, 'update'])->name('admin.accesos.update');
 Route::delete('/admin/acceso/{acceso}', [AccesoFrontendController::class, 'destroy'])->name('admin.accesos.destroy');
+
+
+Route::get('/index', [ControlAeronaveController::class, 'index'])->name('admin.controlaeronave.index');
+Route::get('/create', [ControlAeronaveController::class, 'create'])->name('admin.controlaeronave.create');
+Route::post('/store', [ControlAeronaveController::class, 'store'])->name('admin.controlaeronave.store');
+// Alias tipo “show” apuntando al index (igual que en tu módulo de accesos)
+Route::get('/show', [ControlAeronaveController::class, 'index'])->name('admin.controlaeronave.show');
+Route::get('/edit/{control}', [ControlAeronaveController::class, 'edit'])->name('admin.controlaeronave.edit');
+Route::put('/update/{control}', [ControlAeronaveController::class, 'update'])->name('admin.controlaeronave.update');
+Route::delete('/{control}', [ControlAeronaveController::class, 'destroy'])->name('admin.control.destroy');
+// Ruta nueva que guarda solo los últimos 10 campos
+Route::post('/store-acceso', [ControlAeronaveController::class, 'storeAcceso'])->name('admin.controlaeronave.storeAcceso');
+
+// Accesos (tabla independiente)
+
+// Tu resource del control (ajusta los métodos que uses)
+Route::resource('control-aeronave', ControlAeronaveController::class);
+
+// Listar accesos de un control (JSON para modal y detalles)
+Route::get('accesos-personal/{control}', [accesos_personalController::class, 'index'])->name('accesos-personal.index');
+// Crear acceso desde el modal (POST)
+Route::post('accesos-personal', [accesos_personalController::class, 'store'])->name('accesos-personal.store');
+// Eliminar un acceso (DELETE)
+Route::delete('accesos-personal/{acceso}', [accesos_personalController::class, 'destroy'])->name('accesos-personal.destroy');
+
 
 //RUTAS DE VUELOS
 Route::get('/admin/vuelos/index', [VueloFrontendController::class, 'index'])->name('admin.vuelo.index');
@@ -149,3 +170,21 @@ Route::get('/reportes/vuelos/excel', [ReportController::class, 'exportarVuelosEx
 
 Route::get('/reportes/ubicaciones', [ReportController::class, 'reporteUbicaciones'])->name('reportes.ubicaciones');
 Route::get('/reportes/usuariosapp', [ReportController::class, 'reporteUsuariosApp'])->name('reportes.usuariosapp');
+
+
+
+ // Listado con filtros
+Route::get('/control-aeronave', [ReportController::class, 'controlAeronaveIndex'])->name('reportes.control_aeronave.index');
+    // PDF por registro
+Route::get('/control-aeronave/{id}/pdf', [ReportController::class, 'controlAeronavePdf'])->name('reportes.control_aeronave.pdf');
+
+
+
+
+
+
+
+Route::get('/reportes/control-aeronave/{id}/pdf', [ReportController::class, 'controlAeronavePdf'])->name('reportes.control_aeronave.pdf');
+
+// (Opcional) vista HTML para previsualizar antes de exportar
+Route::get('/reportes/control-aeronave/{id}/preview', [ReportController::class, 'controlAeronavePreview'])->name('reportes.control_aeronave.preview');

@@ -29,7 +29,7 @@
     <section class="content-header">
         <div class="container-fluid">
             <div class="col-sm-12">
-                <h1>Permisos Usuarioss</h1>
+                <h1>Permisos Usuarios</h1>
             </div>
             <br>
             <button type="button" style="font-weight: bold; background-color:rgb(52, 131, 222); color: white !important;" onclick="modalAgregar()" class="button button-3d button-rounded button-pill button-small">

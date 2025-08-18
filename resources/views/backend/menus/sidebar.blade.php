@@ -76,6 +76,24 @@
 .sidebar .nav-link:hover {
     color: rgb(244, 111, 113) !important;
 }
+
+.aside {
+    height: 100%;
+}
+
+
+
+/* Ajustar el sidebar para que empiece debajo del navbar fijo
+.main-sidebar {
+    position: fixed; /* asegura que también sea fijo 
+    top: 56px;       /* mismo alto que el navbar 
+    height: calc(100% - 56px); /* ocupa todo el alto restante 
+}
+
+.content-wrapper {
+    margin-top: 56px;  para que el contenido no se solape con el navbar 
+}
+*/
 </style>
 <!-- en la clase elevation-0 es para ponerle una especie de sobra al la imagen -->
 
@@ -158,7 +176,15 @@
                         <li class="nav-item">
                             <a href="{{ route('admin.accesos.index') }}" target="frameprincipal" class="nav-link"
                                 onclick="guardarUltimaVista(event, this.href)">
-                                <i class="far fa-circle nav-icon"></i> Accesos
+                                <i class="far fa-circle nav-icon"></i> Acceso Aeronave/Diamante
+                            </a>
+
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{{ route('admin.controlaeronave.index') }}" target="frameprincipal"
+                                class="nav-link" onclick="guardarUltimaVista(event, this.href)">
+                                <i class="far fa-circle nav-icon"></i> control Acceso Aeronave
                             </a>
 
                         </li>
@@ -220,26 +246,53 @@
                                 <p>Usuario App</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('reportes.panel') }}" target="frameprincipal" class="nav-link"
+                                onclick="guardarUltimaVista(event, this.href)">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Reportes</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 @endcan
 
+                <!-- REPORTES -->
+                @can('sidebar.roles.y.permisos')
+                <li class="nav-item">
+                    <a href="#" class="nav-link nav-">
+                        <i class="fas fa-chart-line"></i> <!-- icono de reportes/estadísticas -->
+                        <p>
+                            Reportes
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('reportes.panel') }}" target="frameprincipal" class="nav-link"
+                                onclick="guardarUltimaVista(event, this.href)">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Panel de Reportes</p>
+                            </a>
+                        </li>
+                        <!-- Si en un futuro tienes más reportes, puedes agregarlos aquí -->
+                        {{-- 
+                        <li class="nav-item">
+                        <a href="{{ route('reportes.otro') }}" target="frameprincipal" class="nav-link"
+                        onclick="guardarUltimaVista(event, this.href)">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Otro Reporte</p>
+                        </a>
+                </li>
+                --}}
+            </ul>
+            </li>
+            @endcan
 
-                <!-- VUELOS -->
-
+            <!-- VUELOS -->
 
             </ul>
         </nav>
-
-        <div class="p-3">
-            <a href="{{ route('reportes.panel') }}" target="frameprincipal" class="btn btn-block btn-outline-light"
-                style="border-color: #17a2b8; color: #17a2b8;" onclick="guardarUltimaVista(event, this.href)">
-                📊 Reportes
-            </a>
-        </div>
-
-
-
     </div>
 
 </aside>
