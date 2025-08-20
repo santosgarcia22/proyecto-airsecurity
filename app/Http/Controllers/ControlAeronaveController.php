@@ -241,17 +241,6 @@ class ControlAeronaveController extends Controller
     }
 
 
-    public function show($id)
-    {
-        $control = controlAero::with('accesos')->findOrFail($id);
-        return view('control_aeronave.show', compact('control'));
-    }
-
-
-
-    
-
-
-
+  
 
 }

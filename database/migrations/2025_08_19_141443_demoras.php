@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('vuelo', function (Blueprint $table) {
-            $table->id('id_vuelo');
-            $table->string('fecha');
-            $table->string('numero_vuelo');
-            $table->string('matricula');
-            $table->string('destino');
-            $table->string('origen');
+        //
+          Schema::create('demoras', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('vuelo_id');
+            $table->foreign('vuelo_id')->references('id')->on('vuelos');
+            $table->string('motivo', 200);
+            $table->BigInteger('minutos');
+            $table->BigInteger('agente_id');
             $table->timestamps();
         });
+
     }
 
     /**
@@ -27,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('vuelo');
+        //
     }
 };

@@ -15,18 +15,7 @@ class controlAero extends Model
 
 
     protected $fillable = [
-        'fecha','origen','numero_vuelo','hora_llegada','posicion_llegada',
-        'matricula_operador','coordinador_lider',
-        'desabordaje_inicio','desabordaje_fin',
-        'inspeccion_cabina_inicio','inspeccion_cabina_fin',
-        'aseo_ingreso','aseo_salida',
-        'tripulacion_ingreso','salida_itinerario',
-        'abordaje_inicio','abordaje_fin','cierre_puertas',
-        'agente_nombre','agente_id','agente_firma',
-        'demora_tiempo','demora_motivo',
-        'destino','total_pax','hora_real_salida',
-        'nombre','id','hora_entrada','hora_salida','hora_entrada1','hora_salida1', 
-        'herramientas','empresa','motivo','firma'
+        'fecha', 'origen', 'destino', 'numero_vuelo_llegando','numero_vuelo_saliendo',
         ];
 
 

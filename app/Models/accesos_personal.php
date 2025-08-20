@@ -18,9 +18,9 @@ class accesos_personal extends Model
     ];
 
   public function control()
-{
-    return $this->belongsTo(\App\Models\controlAero::class,'control_id','id_control_aeronave');
-}
+    {
+        return $this->belongsTo(\App\Models\controlAero::class,'control_id','id_control_aeronave');
+    }
 
 
 

@@ -306,4 +306,42 @@ class ReportController extends Controller
 
         return $pdf->stream("control_acceso_aeronave_{$header->numero_vuelo}_{$fecha}.pdf");
     }
+
+
+
+    
+    public function pdf($id)
+        {
+            // 1. Trae el control con sus accesos ordenados
+            $control = controlAero::with(['accesos' => function ($q) {
+                $q->orderBy('id_personal');   // o por nombre/hora, como prefieras
+            }])->findOrFail($id);
+
+            // 2. (Opcional) convertir firmas a base64 para que dompdf las muestre
+            $rows = $control->accesos->map(function ($r) {
+                $r->firma_b64 = $this->toBase64($r->firma);
+                return $r;
+            });
+
+            // 3. Datos para la vista
+            $header  = $control;
+            $maxRows = 32; // alto fijo de planilla (ajústalo si tu formato usa otro)
+
+            $pdf = Pdf::loadView('reportes.control_aeronave.pdf', compact('header', 'rows', 'maxRows'))
+                    ->setPaper('letter', 'portrait'); // o 'legal'/'A4'
+
+            return $pdf->stream("control_acceso_{$control->id_control_aeronave}.pdf");
+        }
+
+        private function toBase64(?string $pathRel)
+        {
+            if (!$pathRel) return null;
+            $abs = Storage::disk('public')->path($pathRel);
+            if (!is_file($abs)) return null;
+
+            $mime = mime_content_type($abs) ?: 'image/png';
+            $data = base64_encode(file_get_contents($abs));
+            return "data:$mime;base64,$data";
+        }
+
 }

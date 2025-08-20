@@ -21,7 +21,7 @@ use App\Http\Controllers\api\AccesoApiController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ControlAeronaveController;
 use App\Http\Controllers\accesos_personalController;
-
+use App\Http\Controllers\VuelosController;
 
 
 // --- LOGIN ---
@@ -73,9 +73,6 @@ Route::put('/update/{control}', [ControlAeronaveController::class, 'update'])->n
 Route::delete('/{control}', [ControlAeronaveController::class, 'destroy'])->name('admin.control.destroy');
 // Ruta nueva que guarda solo los últimos 10 campos
 Route::post('/store-acceso', [ControlAeronaveController::class, 'storeAcceso'])->name('admin.controlaeronave.storeAcceso');
-
-// Accesos (tabla independiente)
-
 // Tu resource del control (ajusta los métodos que uses)
 Route::resource('control-aeronave', ControlAeronaveController::class);
 
@@ -87,16 +84,32 @@ Route::post('accesos-personal', [accesos_personalController::class, 'store'])->n
 Route::delete('accesos-personal/{acceso}', [accesos_personalController::class, 'destroy'])->name('accesos-personal.destroy');
 
 
-//RUTAS DE VUELOS
+//RUTAS DE VUELO
 Route::get('/admin/vuelos/index', [VueloFrontendController::class, 'index'])->name('admin.vuelo.index');
 Route::get('/admin/vuelos/create', [VueloFrontendController::class, 'create'])->name('admin.vuelo.create');
 Route::post('/admin/vuelo/store', [VueloFrontendController::class, 'store'])->name('admin.vuelo.store');
 Route::get('/admin/vuelos/show', [VueloFrontendController::class, 'index'])->name('admin.vuelo.show');
-
 Route::get('/admin/vuelo/edit/{vuelo}', [VueloFrontendController::class, 'edit'])->name('admin.vuelo.edit');
 Route::put('/admin/vuelo/update/{vuelo}', [VueloFrontendController::class, 'update'])->name('admin.vuelo.update');
-
 Route::delete('/admin/vuelo/{vuelo}', [VueloFrontendController::class, 'destroy'])->name('admin.vuelo.destroy');
+
+
+//NUEVA VISTA VUELOS CON LAS RELACIONES DE LAS 5 TABLAS 
+// LISTA
+Route::get('/admin/vuelos', [VuelosController::class, 'index'])->name('admin.vuelo.index');
+// FORM CREAR
+Route::get('/admin/vuelos/create', [VuelosController::class, 'create'])->name('admin.vuelo.create');
+// GUARDAR
+Route::post('/admin/vuelos', [VuelosController::class, 'store'])->name('admin.vuelo.store');
+// VER DETALLE
+Route::get('/admin/vuelos/{vuelo}', [VuelosController::class, 'show'])->name('admin.vuelo.show')->whereNumber('vuelo');
+// FORM EDITAR
+Route::get('/admin/vuelos/{vuelo}/edit', [VuelosController::class, 'edit'])->name('admin.vuelo.edit')->whereNumber('vuelo');
+// ACTUALIZAR
+Route::put('/admin/vuelos/{vuelo}', [VuelosController::class, 'update'])->name('admin.vuelo.update')->whereNumber('vuelo');
+// ELIMINAR
+Route::delete('/admin/vuelos/{vuelo}', [VuelosController::class, 'destroy'])->name('admin.vuelo.destroy')->whereNumber('vuelo');
+
 
 // RUTAS DE TIPO
 
@@ -179,10 +192,8 @@ Route::get('/control-aeronave', [ReportController::class, 'controlAeronaveIndex'
 Route::get('/control-aeronave/{id}/pdf', [ReportController::class, 'controlAeronavePdf'])->name('reportes.control_aeronave.pdf');
 
 
-
-
-
-
+// routes/web.php
+Route::get('/reportes/control-aeronave/{id}/pdf',[ReportController::class, 'pdf'])->name('reportes.control_aeronave.pdf');
 
 Route::get('/reportes/control-aeronave/{id}/pdf', [ReportController::class, 'controlAeronavePdf'])->name('reportes.control_aeronave.pdf');
 
