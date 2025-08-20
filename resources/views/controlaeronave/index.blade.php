@@ -117,6 +117,83 @@ body.layout-navbar-fixed .wrapper>.content-wrapper {
     display: block;
     margin-bottom: 2px
 }
+
+/* ===== Detalles: layout por secciones ===== */
+.det-wrap {
+    padding: 6px 0;
+}
+
+.summary-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin: .25rem 0 10px;
+}
+
+.summary-chips .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    background: #f6f9ff;
+    border: 1px solid #e7eefb;
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: .86rem;
+    color: #224;
+}
+
+.section-block {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    background: #eff4ff;
+    color: #2847ff;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-bottom: 1px solid #e3e9ff;
+    font-size: .93rem;
+}
+
+.kv-grid {
+    padding: 10px 12px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px 16px;
+}
+
+.kv {
+    background: #fff;
+    border: 1px dashed #e9ecef;
+    border-radius: 10px;
+    padding: 8px 10px;
+}
+
+.kv small {
+    display: block;
+    color: #6c757d;
+    margin-bottom: 2px;
+}
+
+.kv .v {
+    font-weight: 600;
+    color: #1b2430;
+}
+
+.firma-thumb {
+    height: 60px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+}
+
+/* tabla de accesos dentro de detalles, tal cual la tienes */
 </style>
 @endsection
 
@@ -216,178 +293,198 @@ body.layout-navbar-fixed .wrapper>.content-wrapper {
                                 {{-- Fila de DETALLES (no tocamos el diseño de la tabla inferior) --}}
                                 <tr id="det-{{ $it->id_control_aeronave }}" class="details-row bg-light">
                                     <td colspan="7">
-                                        <div class="details-grid">
-                                            {{-- básicos --}}
-                                            <div class="det-cell"><small>ID control</small>
-                                                <div class="fw-semibold">{{ $it->id_control_aeronave }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Fecha</small>
-                                                <div class="fw-semibold">{{ $it->fecha ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Origen</small>
-                                                <div class="fw-semibold">{{ $it->origen ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>N.º vuelo</small>
-                                                <div class="fw-semibold">{{ $it->numero_vuelo ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Hora llegada</small>
-                                                <div class="fw-semibold">{{ $it->hora_llegada ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Posición llegada</small>
-                                                <div class="fw-semibold">{{ $it->posicion_llegada ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Matrícula / Operador</small>
-                                                <div class="fw-semibold">{{ $it->matricula_operador ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Coordinador / Líder</small>
-                                                <div class="fw-semibold">{{ $it->coordinador_lider ?? '—' }}</div>
+                                        <div class="det-wrap">
+
+                                            {{-- Resumen de cabecera en chips --}}
+                                            <div class="summary-chips">
+                                                <span class="chip"><i class="bi bi-hash"></i>
+                                                    {{ $it->id_control_aeronave }}</span>
+                                                <span class="chip"><i class="bi bi-calendar-event"></i>
+                                                    {{ $it->fecha ?? '—' }}</span>
+                                                <span class="chip"><i class="bi bi-airplane"></i> Vuelo
+                                                    {{ $it->numero_vuelo ?? '—' }}</span>
+                                                <span class="chip"><i class="bi bi-geo-alt"></i>
+                                                    {{ $it->origen ?? '—' }} → {{ $it->destino ?? '—' }}</span>
+                                                <span class="chip"><i class="bi bi-clock"></i> Llegada
+                                                    {{ $it->hora_llegada ?? '—' }}</span>
+                                                @if(!empty($it->posicion_llegada))
+                                                <span class="chip"><i class="bi bi-geo"></i> Pos
+                                                    {{ $it->posicion_llegada }}</span>
+                                                @endif
+                                                @if(!empty($it->matricula_operador))
+                                                <span class="chip"><i class="bi bi-buildings"></i>
+                                                    {{ $it->matricula_operador }}</span>
+                                                @endif
+                                                @if(!empty($it->coordinador_lider))
+                                                <span class="chip"><i class="bi bi-person-badge"></i>
+                                                    {{ $it->coordinador_lider }}</span>
+                                                @endif
                                             </div>
 
-                                            {{-- procesos/tiempos --}}
-                                            <div class="det-cell"><small>Desabordaje inicio</small>
-                                                <div class="fw-semibold">{{ $it->desabordaje_inicio ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Desabordaje fin</small>
-                                                <div class="fw-semibold">{{ $it->desabordaje_fin ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Inspección cabina inicio</small>
-                                                <div class="fw-semibold">{{ $it->inspeccion_cabina_inicio ?? '—' }}
-                                                </div>
-                                            </div>
-                                            <div class="det-cell"><small>Inspección cabina fin</small>
-                                                <div class="fw-semibold">{{ $it->inspeccion_cabina_fin ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Aseo ingreso</small>
-                                                <div class="fw-semibold">{{ $it->aseo_ingreso ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Aseo salida</small>
-                                                <div class="fw-semibold">{{ $it->aseo_salida ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Tripulación ingreso</small>
-                                                <div class="fw-semibold">{{ $it->tripulacion_ingreso ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Salida itinerario</small>
-                                                <div class="fw-semibold">{{ $it->salida_itinerario ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Abordaje inicio</small>
-                                                <div class="fw-semibold">{{ $it->abordaje_inicio ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Abordaje fin</small>
-                                                <div class="fw-semibold">{{ $it->abordaje_fin ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Cierre puertas</small>
-                                                <div class="fw-semibold">{{ $it->cierre_puertas ?? '—' }}</div>
-                                            </div>
-
-                                            {{-- seguridad --}}
-                                            <div class="det-cell"><small>Agente / Oficial</small>
-                                                <div class="fw-semibold">{{ $it->agente_nombre ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>ID Agente</small>
-                                                <div class="fw-semibold">{{ $it->agente_id ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell">
-                                                <small>Firma (archivo)</small>
-                                                <div class="fw-semibold">
-                                                    @if(!empty($it->agente_firma))
-                                                    <a href="{{ Storage::url($it->agente_firma) }}" target="_blank">
-                                                        <img src="{{ Storage::url($it->agente_firma) }}" alt="Firma"
-                                                            style="height:60px;border:1px solid #e9ecef;border-radius:6px">
-                                                    </a>
-                                                    @else
-                                                    —
-                                                    @endif
+                                            {{-- Sección: Operación en tierra --}}
+                                            <div class="section-block">
+                                                <div class="section-title"><i class="bi bi-truck"></i> Operación en
+                                                    tierra</div>
+                                                <div class="kv-grid">
+                                                    <div class="kv"><small>Desabordaje inicio</small>
+                                                        <div class="v">{{ $it->desabordaje_inicio ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="kv"><small>Desabordaje fin</small>
+                                                        <div class="v">{{ $it->desabordaje_fin ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="kv"><small>Inspección cabina inicio</small>
+                                                        <div class="v">{{ $it->inspeccion_cabina_inicio ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="kv"><small>Inspección cabina fin</small>
+                                                        <div class="v">{{ $it->inspeccion_cabina_fin ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="kv"><small>Aseo ingreso</small>
+                                                        <div class="v">{{ $it->aseo_ingreso ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="kv"><small>Aseo salida</small>
+                                                        <div class="v">{{ $it->aseo_salida ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="kv"><small>Tripulación ingreso</small>
+                                                        <div class="v">{{ $it->tripulacion_ingreso ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="kv"><small>Salida itinerario</small>
+                                                        <div class="v">{{ $it->salida_itinerario ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="kv"><small>Abordaje inicio</small>
+                                                        <div class="v">{{ $it->abordaje_inicio ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="kv"><small>Abordaje fin</small>
+                                                        <div class="v">{{ $it->abordaje_fin ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="kv"><small>Cierre puertas</small>
+                                                        <div class="v">{{ $it->cierre_puertas ?? '—' }}</div>
+                                                    </div>
                                                 </div>
                                             </div>
 
-
-                                            {{-- demoras / pax --}}
-                                            <div class="det-cell"><small>Demora (min)</small>
-                                                <div class="fw-semibold">{{ $it->demora_tiempo ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Motivo demora</small>
-                                                <div class="fw-semibold">{{ $it->demora_motivo ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Destino</small>
-                                                <div class="fw-semibold">{{ $it->destino ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Total pax</small>
-                                                <div class="fw-semibold">{{ $it->total_pax ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Hora real salida</small>
-                                                <div class="fw-semibold">{{ $it->hora_real_salida ?? '—' }}</div>
-                                            </div>
-
-                                            {{-- extras (los 10 finales) --}}
-                                            <div class="det-cell"><small>Nombre</small>
-                                                <div class="fw-semibold">{{ $it->nombre ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>ID (persona)</small>
-                                                <div class="fw-semibold">{{ $it->id ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Hora entrada</small>
-                                                <div class="fw-semibold">{{ $it->hora_entrada ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Hora salida</small>
-                                                <div class="fw-semibold">{{ $it->hora_salida ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Hora entrada 1</small>
-                                                <div class="fw-semibold">{{ $it->hora_entrada1 ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Hora salida 1</small>
-                                                <div class="fw-semibold">{{ $it->hora_salida1 ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Herramientas</small>
-                                                <div class="fw-semibold">{{ $it->herramientas ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Empresa</small>
-                                                <div class="fw-semibold">{{ $it->empresa ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell"><small>Motivo</small>
-                                                <div class="fw-semibold">{{ $it->motivo ?? '—' }}</div>
-                                            </div>
-                                            <div class="det-cell">
-                                                <small>Firma (general)</small>
-                                                <div class="fw-semibold">
-                                                    @if(!empty($it->firma))
-                                                    <a href="{{ Storage::url($it->firma) }}" target="_blank">
-                                                        <img src="{{ Storage::url($it->firma) }}" alt="Firma"
-                                                            style="height:60px;border:1px solid #e9ecef;border-radius:6px">
-                                                    </a>
-                                                    @else
-                                                    —
-                                                    @endif
+                                            {{-- Sección: Seguridad --}}
+                                            <div class="section-block">
+                                                <div class="section-title"><i class="bi bi-shield-check"></i> Seguridad
+                                                </div>
+                                                <div class="kv-grid">
+                                                    <div class="kv"><small>Agente / Oficial</small>
+                                                        <div class="v">{{ $it->agente_nombre ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="kv"><small>ID Agente</small>
+                                                        <div class="v">{{ $it->agente_id ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="kv">
+                                                        <small>Firma (archivo)</small>
+                                                        <div class="v">
+                                                            @if(!empty($it->agente_firma))
+                                                            <a href="{{ Storage::url($it->agente_firma) }}"
+                                                                target="_blank">
+                                                                <img src="{{ Storage::url($it->agente_firma) }}"
+                                                                    alt="Firma" class="firma-thumb">
+                                                            </a>
+                                                            @else — @endif
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                        </div>
+                                            {{-- Sección: Demoras y Pax --}}
+                                            <div class="section-block">
+                                                <div class="section-title"><i class="bi bi-hourglass-split"></i> Demoras
+                                                    &amp; Pax</div>
+                                                <div class="kv-grid">
+                                                    <div class="kv"><small>Demora (min)</small>
+                                                        <div class="v">{{ $it->demora_tiempo ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="kv"><small>Motivo demora</small>
+                                                        <div class="v">{{ $it->demora_motivo ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="kv"><small>Total pax</small>
+                                                        <div class="v">{{ $it->total_pax ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="kv"><small>Hora real salida</small>
+                                                        <div class="v">{{ $it->hora_real_salida ?? '—' }}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
 
-                                        <hr>
-                                        <h6 class="mb-2">Accesos registrados</h6>
-                                        <div class="table-responsive">
-                                            <table class="table table-sm mb-0">
-                                                <thead>
-                                                    <tr>
-                                                        <th>#</th>
-                                                        <th>Nombre</th>
-                                                        <th>ID</th>
-                                                        <th>Entrada</th>
-                                                        <th>Salida</th>
-                                                        <th>Entrada 2</th>
-                                                        <th>Salida 2</th>
-                                                        <th>Herramientas</th>
-                                                        <th>Empresa/Área</th>
-                                                        <th>Motivo</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="detAccTbody-{{ $it->id_control_aeronave }}">
-                                                    <tr>
-                                                        <td colspan="10" class="text-muted">Sin datos</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
+                                            {{-- Sección: Registro extra (los 10 finales que ya tenías) --}}
+                                            <div class="section-block">
+                                                <div class="section-title"><i class="bi bi-journal-text"></i> Registro
+                                                    extra</div>
+                                                <div class="kv-grid">
+                                                    <div class="kv"><small>Nombre</small>
+                                                        <div class="v">{{ $it->nombre ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="kv"><small>ID (persona)</small>
+                                                        <div class="v">{{ $it->id ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="kv"><small>Hora entrada</small>
+                                                        <div class="v">{{ $it->hora_entrada ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="kv"><small>Hora salida</small>
+                                                        <div class="v">{{ $it->hora_salida ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="kv"><small>Hora entrada 1</small>
+                                                        <div class="v">{{ $it->hora_entrada1 ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="kv"><small>Hora salida 1</small>
+                                                        <div class="v">{{ $it->hora_salida1 ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="kv"><small>Herramientas</small>
+                                                        <div class="v">{{ $it->herramientas ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="kv"><small>Empresa</small>
+                                                        <div class="v">{{ $it->empresa ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="kv"><small>Motivo</small>
+                                                        <div class="v">{{ $it->motivo ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="kv">
+                                                        <small>Firma (general)</small>
+                                                        <div class="v">
+                                                            @if(!empty($it->firma))
+                                                            <a href="{{ Storage::url($it->firma) }}" target="_blank">
+                                                                <img src="{{ Storage::url($it->firma) }}" alt="Firma"
+                                                                    class="firma-thumb">
+                                                            </a>
+                                                            @else — @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <hr class="my-2">
+
+                                            {{-- Accesos registrados (tu tabla, sin cambios) --}}
+                                            <h6 class="mb-2">Accesos registrados</h6>
+                                            <div class="table-responsive">
+                                                <table class="table table-sm mb-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>#</th>
+                                                            <th>Nombre</th>
+                                                            <th>ID</th>
+                                                            <th>Entrada</th>
+                                                            <th>Salida</th>
+                                                            <th>Entrada 2</th>
+                                                            <th>Salida 2</th>
+                                                            <th>Herramientas</th>
+                                                            <th>Empresa/Área</th>
+                                                            <th>Motivo</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="detAccTbody-{{ $it->id_control_aeronave }}">
+                                                        <tr>
+                                                            <td colspan="10" class="text-muted">Sin datos</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
                                         </div>
                                     </td>
+
                                 </tr>
                                 @empty
                                 <tr>
@@ -418,7 +515,8 @@ body.layout-navbar-fixed .wrapper>.content-wrapper {
             <form id="accForm" method="POST" action="{{ route('accesos-personal.store') }}"
                 enctype="multipart/form-data">
                 @csrf
-                <input type="hidden" name="control_id" id="accControlId">
+
+
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Datos de accesos</h5>
@@ -428,6 +526,18 @@ body.layout-navbar-fixed .wrapper>.content-wrapper {
                         <div class="row">
                             <div class="col-md-6"><label>Nombre</label><input name="nombre" class="form-control"
                                     required></div>
+
+
+                            <!-- campo visible (solo para mostrar) -->
+                            <div class="col-md-6">
+                                <label>ID CONTROL</label>
+                                <input class="form-control" id="accControlIdView" readonly>
+                            </div>
+
+                            <!-- Este es el ÚNICO que se envía -->
+                            <!-- ÚNICO hidden que se envía -->
+                            <input type="hidden" name="control_id" id="accControlId">
+
 
                             <div class="col-md-6"><label>ID</label><input name="id" class="form-control"></div>
 
@@ -484,81 +594,87 @@ body.layout-navbar-fixed .wrapper>.content-wrapper {
 
 @extends('backend.menus.footerjs')
 @section('content-admin-js')
+
+
+{{-- jQuery + Bootstrap 4.6 bundle (incluye Popper) --}}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-// Ajuste de offset por header (opcional)
-document.addEventListener('DOMContentLoaded', function() {
-    const header = document.querySelector('.main-header');
-    const wrap = document.querySelector('.content-wrapper');
-    if (header && wrap) {
-        const h = Math.ceil(header.getBoundingClientRect().height);
-        wrap.style.marginTop = (h + 20) + 'px';
+// --- Al abrir el modal, carga la tabla del modal
+$('#accModal').on('show.bs.modal', function(ev) {
+    const btn = $(ev.relatedTarget); // <button Accesos ...>
+    const controlId = btn.data('control-id') || '';
+    const getUrl = btn.data('get-url') || '';
+
+    // setear visible + hidden
+    $('#accControlIdView').val(controlId);
+    $('#accControlId').val(controlId);
+
+    // guarda la url para recargar la tabla
+    $(this).data('getUrl', getUrl);
+
+    if (getUrl) {
+        cargarAccesosEnTabla(getUrl, document.querySelector('#accList tbody'));
     }
 });
 
-// ===== MODAL Accesos =====
-$('#accModal').on('show.bs.modal', function(ev) {
-    var btn = $(ev.relatedTarget);
-    if (!btn.length) return;
 
-    var controlId = btn.data('control-id');
-    var getUrl = btn.data('get-url');
-
-    $('#accControlId').val(controlId);
-    $('#accModal').data('getUrl', getUrl);
-
-    cargarAccesosEnTabla(getUrl, document.querySelector('#accList tbody'));
-});
-
+// --- Enviar el form por AJAX y esperar JSON
 $('#accForm').on('submit', function(e) {
     e.preventDefault();
-    var form = this,
-        fd = new FormData(form);
+
+    const controlId = $('#accControlId').val();
+    if (!controlId) {
+        alert('Falta el control_id. Abre el modal desde el botón "Accesos" de la fila.');
+        return;
+    }
+
+    const fd = new FormData(this);
+    fd.set('control_id', controlId); // fuerza el valor correcto
 
     $.ajax({
-        url: form.action,
+        url: this.action,
         type: 'POST',
         data: fd,
         processData: false,
         contentType: false,
         headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
         },
-        success: async function(resp) {
+        success: async (resp) => {
             if (resp && resp.ok) {
-                var url = $('#accModal').data('getUrl');
+                const url = $('#accModal').data('getUrl');
                 await cargarAccesosEnTabla(url, document.querySelector('#accList tbody'));
-
-                // también refresca la tabla del detalle si está abierta
-                // localizamos la fila de detalles visible más cercana al control actual
-                const allRows = document.querySelectorAll('tbody tr.details-row.show');
-                allRows.forEach(async function(trDet) {
-                    const btn = trDet.previousElementSibling.querySelector(
-                        'button[onclick^="toggleDet"]');
-                    if (!btn) return;
-                    const detUrl = btn.getAttribute('data-get-url');
-                    const tbody = trDet.querySelector('table tbody');
-                    if (detUrl && tbody) await cargarAccesosDet(detUrl, tbody);
-                });
-
-                $('#accModal :focus').blur(); // evitar warning aria-hidden
+                $('#accModal :focus').blur();
                 $('#accModal').modal('hide');
-                form.reset();
-            } else {
-                location.reload();
+                $('#accForm')[0].reset(); // <-- arregla el form.reset() que antes no existía
             }
         },
-        error: function(xhr) {
-            console.log(xhr.responseText);
-            alert(
-                'No se pudo guardar. Revisa que control_id llegue y que la ruta accesos-personal.store exista.'
-            );
+        error: (xhr) => {
+            if (xhr.status === 422 && xhr.responseJSON?.errors) {
+                let msg = 'Revisa los datos:\n';
+                for (const k in xhr.responseJSON.errors) msg +=
+                    `- ${xhr.responseJSON.errors[k][0]}\n`;
+                alert(msg);
+            } else {
+                console.log(xhr.responseText);
+                alert('Error al guardar el acceso.');
+            }
         }
     });
 });
 
+
+// --- Helpers para cargar tablas (modal y detalle)
 async function cargarAccesosEnTabla(url, tbody) {
     try {
-        const r = await fetch(url);
+        const r = await fetch(url, {
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
         const rows = await r.json();
         tbody.innerHTML = '';
         if (!rows.length) {
@@ -568,21 +684,26 @@ async function cargarAccesosEnTabla(url, tbody) {
         rows.forEach((x, i) => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-        <td>${i+1}</td>
-        <td>${x.nombre||''}</td>
-        <td>${x.id||''}</td>
-        <td>${x.hora_entrada||''}</td>
-        <td>${x.hora_salida||''}</td>`;
+                <td>${i+1}</td>
+                <td>${x.nombre||''}</td>
+                <td>${x.id||''}</td>
+                <td>${x.hora_entrada||''}</td>
+                <td>${x.hora_salida||''}</td>
+            `;
             tbody.appendChild(tr);
         });
-    } catch (e) {
+    } catch {
         tbody.innerHTML = '<tr><td colspan="5" class="text-danger">Error</td></tr>';
     }
 }
 
 async function cargarAccesosDet(url, tbody) {
     try {
-        const r = await fetch(url);
+        const r = await fetch(url, {
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
         const rows = await r.json();
         tbody.innerHTML = '';
         if (!rows.length) {
@@ -592,38 +713,34 @@ async function cargarAccesosDet(url, tbody) {
         rows.forEach((x, i) => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-        <td>${i+1}</td>
-        <td>${x.nombre||''}</td>
-        <td>${x.id||''}</td>
-        <td>${x.hora_entrada||''}</td>
-        <td>${x.hora_salida||''}</td>
-        <td>${x.hora_entrada1||''}</td>
-        <td>${x.hora_salida1||''}</td>
-        <td>${x.herramientas||''}</td>
-        <td>${x.empresa||''}</td>
-        <td>${x.motivo||''}</td>`;
+                <td>${i+1}</td>
+                <td>${x.nombre||''}</td>
+                <td>${x.id||''}</td>
+                <td>${x.hora_entrada||''}</td>
+                <td>${x.hora_salida||''}</td>
+                <td>${x.hora_entrada1||''}</td>
+                <td>${x.hora_salida1||''}</td>
+                <td>${x.herramientas||''}</td>
+                <td>${x.empresa||''}</td>
+                <td>${x.motivo||''}</td>
+            `;
             tbody.appendChild(tr);
         });
-    } catch (e) {
+    } catch {
         tbody.innerHTML = '<tr><td colspan="10" class="text-danger">Error</td></tr>';
     }
 }
-</script>
 
-
-<script>
-// Abre/cierra la fila de detalles sin Bootstrap
+// --- Tu toggle de detalles (como lo tenías)
 function toggleDet(id) {
     const tr = document.getElementById('det-' + id);
     const btn = document.getElementById('btn-' + id);
     if (!tr) return;
-
     tr.classList.toggle('show');
-    if (btn) {
-        btn.textContent = tr.classList.contains('show') ? 'Ocultar' : 'Ver detalles';
-    }
+    if (btn) btn.textContent = tr.classList.contains('show') ? 'Ocultar' : 'Ver detalles';
 }
 </script>
+
 
 
 {{-- Scripts extra --}}
@@ -645,13 +762,5 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-
-
-
-{{-- tus scripts existentes para eliminar, alerts, etc. --}}
-<script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
-<script src="{{ asset('js/delete.js') }}"></script>
-
-
 
 @endsection

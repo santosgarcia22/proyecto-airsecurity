@@ -142,6 +142,26 @@
                 @endcan
 
                 @can('sidebar.roles.y.permisos')
+                <!-- <li class="nav-item">
+                    <a href="#" class="nav-link nav-">
+                        <i class="fas fa-plane-departure"></i> <!-- icono sólido de avión 
+                        <p>
+                            Vuelos
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('admin.vuelo.index') }}" target="frameprincipal" class="nav-link"
+                                onclick="guardarUltimaVista(event, this.href)">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Vuelo</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li> -->
+
+
                 <li class="nav-item">
                     <a href="#" class="nav-link nav-">
                         <i class="fas fa-plane-departure"></i> <!-- icono sólido de avión -->

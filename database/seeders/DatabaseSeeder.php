@@ -16,5 +16,15 @@ class DatabaseSeeder extends Seeder
         $this->call(UsuariosSeeder::class);
         $this->call(usuariospAppSeeder::class);
         $this->call(ChatbotFlowsSeeder::class);
+
+        $this->call([
+        OperadoresSeeder::class,
+        VuelosSeeder::class,
+        AccesosSeeder::class,
+        TiemposOperativosSeeder::class,
+        DemorasSeeder::class,
+    ]);
+
+
     }
 }

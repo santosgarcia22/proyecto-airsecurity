@@ -19,7 +19,6 @@ return new class extends Migration
                 $t->foreign('control_id')
                 ->references('id_control_aeronave')->on('control_aeronave')
                 ->onDelete('cascade');
-
                 // Datos del acceso de personal
                 $t->string('nombre',150);
                 $t->string('id',50)->nullable();
