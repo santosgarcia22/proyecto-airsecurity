@@ -74,7 +74,7 @@ public function __construct()
 
         $vuelo = Vuelo::create($data);
 
-        return redirect()->route('vuelos.show', $vuelo)->with('success','Vuelo creado.');
+        return redirect()->route('vuelos.index', $vuelo)->with('success','Vuelo creado.');
     }
 
     public function show(Vuelo $vuelo)

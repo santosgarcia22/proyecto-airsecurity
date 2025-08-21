@@ -22,7 +22,7 @@ return new class extends Migration
       $table->time('aseo_ingreso')->nullable();
       $table->time('aseo_salida')->nullable();
       $table->time('tripulacion_ingreso')->nullable();
-      $table->time('cierre_puertas')->nullable();
+      $table->time('cierre_puerta')->nullable();
       $table->timestamps();
 
       $table->foreign('vuelo_id')
