@@ -283,10 +283,11 @@ body.layout-navbar-fixed .wrapper>.content-wrapper {
                                         <a href="{{ route('admin.controlaeronave.edit', $it->id_control_aeronave) }}"
                                             class="btn btn-info btn-sm me-1">Editar</a>
                                         <button class="btn btn-danger btn-sm btn-eliminar"
-                                            data-url="{{ route('admin.control.destroy', $it->id_control_aeronave) }}"
+                                            data-url="{{ route('admin.controlaeronave.destroy', $it->id_control_aeronave) }}"
                                             data-token="{{ csrf_token() }}">
                                             <i class="bi bi-trash"></i> Eliminar
                                         </button>
+
                                     </td>
                                 </tr>
 
@@ -408,7 +409,7 @@ body.layout-navbar-fixed .wrapper>.content-wrapper {
                                                 </div>
                                             </div>
 
-                                            {{-- Sección: Registro extra (los 10 finales que ya tenías) --}}
+                                            <!-- {{-- Sección: Registro extra (los 10 finales que ya tenías) --}}
                                             <div class="section-block">
                                                 <div class="section-title"><i class="bi bi-journal-text"></i> Registro
                                                     extra</div>
@@ -452,7 +453,7 @@ body.layout-navbar-fixed .wrapper>.content-wrapper {
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            </div> -->
 
                                             <hr class="my-2">
 
@@ -547,7 +548,7 @@ body.layout-navbar-fixed .wrapper>.content-wrapper {
                                     class="form-control"></div>
                             <div class="col-md-3"><label>Hora Entrada 2</label><input type="time" name="hora_entrada1"
                                     class="form-control"></div>
-                            <div class="col-md-3"><label>Hora Salida 2</label><input type="time" name="hora_salida1"
+                            <div class="col-md-3"><label>Hora Salida 2</label><input type="time" name="hora_salida2"
                                     class="form-control"></div>
 
                             <div class="col-md-6"><label>Herramientas</label><input name="herramientas"
@@ -600,6 +601,8 @@ body.layout-navbar-fixed .wrapper>.content-wrapper {
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
+
+</script>
 <script>
 // --- Al abrir el modal, carga la tabla del modal
 $('#accModal').on('show.bs.modal', function(ev) {

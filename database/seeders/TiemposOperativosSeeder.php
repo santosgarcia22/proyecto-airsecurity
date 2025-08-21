@@ -28,7 +28,7 @@ class TiemposOperativosSeeder extends Seeder
                 'aseo_ingreso' => Carbon::now()->addMinutes(10),
                 'aseo_salida' => Carbon::now()->addMinutes(30),
                 'tripulacion_ingreso' => Carbon::now()->addMinutes(35),
-                'cierre_puertas' => Carbon::now()->addMinutes(70),
+                'cierre_puerta' => Carbon::now()->addMinutes(70),
             ],
         ]);
     }

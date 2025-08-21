@@ -75,16 +75,16 @@ table {
                             <!-- Tabs -->
                             <div class="col-lg-3">
                                 <div class="nav flex-lg-column nav-pills gap-2" role="tablist">
-                                    <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-base"
-                                        type="button">1. Datos base</button>
-                                    <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-procesos"
-                                        type="button">2. Procesos / tiempos</button>
+
+                                    <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-procesos"
+                                        type="button">1. Tiempos Operativos</button>
+
                                     <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-demoras"
-                                        type="button">3. Demoras y pax</button>
+                                        type="button">2. Demoras y pax</button>
                                     <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-seg"
-                                        type="button">4. Seguridad / adjuntos</button>
-                                    <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-acce"
-                                        type="button">5. Datos de accesos</button>
+                                        type="button">3. Seguridad / adjuntos</button>
+                                    <!-- <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-acce"
+                                        type="button">5. Datos de accesos Y QUITAR TAMBIEN YA ESTA EN EL MODAL</button> -->
                                 </div>
                             </div>
 
@@ -92,49 +92,8 @@ table {
                             <div class="col-lg-9">
                                 <div class="tab-content">
 
-                                    {{-- 1 DATOS BASE --}}
-                                    <div class="tab-pane fade show active" id="tab-base">
-                                        <div class="row g-3">
-                                            <div class="col-sm-4">
-                                                <label class="form-label">Fecha</label>
-                                                <input type="date" name="fecha" class="form-control" required>
-                                            </div>
-                                            <div class="col-sm-4">
-                                                <label class="form-label">Origen</label>
-                                                <input type="text" name="origen" class="form-control" required>
-                                            </div>
-                                            <div class="col-sm-4">
-                                                <label class="form-label">N.º de vuelo (origen)</label>
-                                                <input type="text" name="numero_vuelo" class="form-control" required>
-                                            </div>
-
-                                            <div class="col-sm-4">
-                                                <label class="form-label">Hora de llegada</label>
-                                                <input type="time" name="hora_llegada" class="form-control" required>
-                                            </div>
-                                            <div class="col-sm-8">
-                                                <label class="form-label">Posición de llegada</label>
-                                                <input type="text" name="posicion_llegada" class="form-control"
-                                                    required>
-                                            </div>
-
-                                            <div class="col-12">
-                                                <label class="form-label">Matrícula y operador (TAI, LRC, AV GUG,
-                                                    ...)</label>
-                                                <input type="text" name="matricula_operador" class="form-control"
-                                                    required placeholder="Ej.: N123AB / AV GUG">
-                                            </div>
-
-                                            <div class="col-sm-6">
-                                                <label class="form-label">Coordinador / Líder de vuelo</label>
-                                                <input type="text" name="coordinador_lider" class="form-control"
-                                                    required>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- 2 PROCESOS / TIEMPOS --}}
-                                    <div class="tab-pane fade" id="tab-procesos">
+                                    {{-- 1 TIEMPOS OPERATIVOS --}}
+                                    <div id="tab-procesos" class="tab-pane fade show active" data-tab>
                                         <div class="table-responsive">
                                             <table class="table table-sm align-middle">
                                                 <thead class="table-light">
@@ -162,18 +121,17 @@ table {
                                                     <tr>
                                                         <td>Aseo (personal)</td>
                                                         <td><input type="time" name="aseo_ingreso" class="form-control"
-                                                                required placeholder="Ingreso"></td>
+                                                                required></td>
                                                         <td><input type="time" name="aseo_salida" class="form-control"
-                                                                required placeholder="Salida"></td>
+                                                                required></td>
                                                     </tr>
                                                     <tr>
                                                         <td>Tripulación</td>
                                                         <td><input type="time" name="tripulacion_ingreso"
-                                                                class="form-control" required placeholder="Ingreso">
+                                                                class="form-control" required>
                                                         </td>
                                                         <td><input type="time" name="salida_itinerario"
-                                                                class="form-control" required
-                                                                placeholder="Salida itinerario"></td>
+                                                                class="form-control" required></td>
                                                     </tr>
                                                     <tr>
                                                         <td>Abordaje</td>
@@ -183,9 +141,9 @@ table {
                                                                 required></td>
                                                     </tr>
                                                     <tr>
-                                                        <td>Cierre de puertas</td>
-                                                        <td><input type="time" name="cierre_puertas"
-                                                                class="form-control" required></td>
+                                                        <td>Cierre de puerta</td>
+                                                        <td><input type="time" name="cierre_puerta" class="form-control"
+                                                                required></td>
                                                         <td></td>
                                                     </tr>
                                                 </tbody>
@@ -193,13 +151,13 @@ table {
                                         </div>
                                     </div>
 
-                                    {{-- 3 DEMORAS Y PAX --}}
-                                    <div class="tab-pane fade" id="tab-demoras">
+                                    {{-- 2 DEMORAS --}}
+                                    <div id="tab-demoras" class="tab-pane fade" data-tab>
                                         <div class="row g-3">
                                             <div class="col-sm-3">
                                                 <label class="form-label">Tiempo (min)</label>
-                                                <input type="number" min="0" name="demora_tiempo" class="form-control"
-                                                    required>
+                                                <input type="number" min="0" step="1" name="demora_tiempo"
+                                                    class="form-control" required>
                                             </div>
                                             <div class="col-sm-9">
                                                 <label class="form-label">Motivo de demora</label>
@@ -207,115 +165,42 @@ table {
                                             </div>
 
                                             <div class="col-sm-4">
-                                                <label class="form-label">Destino</label>
-                                                <input type="text" name="destino" class="form-control" required>
-                                            </div>
-                                            <div class="col-sm-4">
-                                                <label class="form-label">N.º de vuelo (destino)</label>
-                                                <input type="text" name="numero_vuelo_destino" class="form-control"
+                                                <label class="form-label">Agente ID</label>
+                                                <input type="text" name="agemte_id" min="1" class="form-control"
                                                     required>
                                             </div>
-                                            <div class="col-sm-4">
-                                                <label class="form-label">Total pax</label>
-                                                <input type="number" min="0" name="total_pax" class="form-control"
-                                                    required>
-                                            </div>
-                                            <div class="col-sm-4">
-                                                <label class="form-label">Hora real de salida</label>
-                                                <input type="time" name="hora_real_salida" class="form-control"
-                                                    required>
-                                            </div>
+
                                         </div>
                                     </div>
 
-                                    {{-- 4 SEGURIDAD / ADJUNTOS --}}
-                                    <div class="tab-pane fade" id="tab-seg">
+                                    {{-- 3 OPERADORES --}}
+                                    <div id="tab-seg" class="tab-pane fade" data-tab>
                                         <div class="row g-3">
                                             <div class="col-md-6">
-                                                <label class="form-label">Agente/Oficial de seguridad (nombre)</label>
-                                                <input type="text" name="agente_nombre" class="form-control" required>
+                                                <label class="form-label">Codigo</label>
+                                                <input type="text" name="codigo" class="form-control" required>
                                             </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label">ID Agente/Oficial</label>
-                                                <input type="text" name="agente_id" class="form-control" required>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label">Firma Agente/Oficial</label>
-                                                <input type="file" name="agente_firma" class="form-control"
-                                                    accept="image/png,image/jpeg,image/webp,image/heic">
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-                                    {{-- 5 Datos de acceso --}}
-                                    <div class="tab-pane fade" id="tab-acce">
-                                        <div class="row g-3">
-                                            <!-- Fila 1 -->
-                                            <div class="col-md-4">
+                                            <div class="col-md-6">
                                                 <label class="form-label">Nombre</label>
                                                 <input type="text" name="nombre" class="form-control" required>
                                             </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">ID</label>
-                                                <input type="text" name="id" class="form-control" required>
-                                            </div>
 
-                                            <!-- Fila 2 -->
-                                            <div class="col-md-3">
-                                                <label class="form-label">Hora Entrada</label>
-                                                <input type="time" name="hora_entrada" class="form-control" required>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label">Hora Salida</label>
-                                                <input type="time" name="hora_salida" class="form-control" required>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label">Hora Entrada 2</label>
-                                                <input type="time" name="hora_entrada1" class="form-control" required>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label">Hora Salida 2</label>
-                                                <input type="time" name="hora_salida1" class="form-control" required>
-                                            </div>
-
-                                            <!-- Fila 3 -->
-                                            <div class="col-md-6">
-                                                <label class="form-label">Herramientas</label>
-                                                <input type="text" name="herramientas" class="form-control" required
-                                                    placeholder="Desarmador">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="form-label">Empresa y Área</label>
-                                                <input type="text" name="empresa" class="form-control" required>
-                                            </div>
-
-                                            <!-- Fila 4 -->
-                                            <div class="col-12">
-                                                <label class="form-label">Motivo Entrada</label>
-                                                <textarea name="motivo" class="form-control"
-                                                    rows="1"></textarea>
-                                            </div>
-
-                                            <!-- Fila 5 -->
-                                            <div class="col-md-4">
-                                                <label class="form-label">Firma Agente/Oficial</label>
-                                                <input type="file" name="firma" class="form-control"
-                                                    accept="image/png,image/jpeg,image/webp,image/heic">
-                                            </div>
                                         </div>
                                     </div>
+
+
+
 
                                 </div><!-- /content -->
                             </div>
                         </div>
 
-                        <div class="card-footer d-flex justify-content-between align-items-center sticky-actions">
+                        <div class="d-flex justify-content-between mt-3">
                             <small class="text-muted">Revisa cada pestaña antes de guardar.</small>
-                            <div class="d-flex gap-2">
-                                <a href="{{ route('admin.controlaeronave.show') }}"
-                                    class="btn btn-secondary">Cancelar</a>
-                                <button type="submit" class="btn btn-success">Guardar</button>
+                            <button type="button" class="btn btn-outline-secondary" id="btnPrev">Anterior</button>
+                            <div>
+                                <button type="button" class="btn btn-primary" id="btnNext">Siguiente</button>
+                                <button type="submit" class="btn btn-success d-none" id="btnSave">Guardar</button>
                             </div>
                         </div>
                 </form>
@@ -327,6 +212,55 @@ table {
 
     @extends('backend.menus.footerjs')
     @section('archivos-js')
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const btnPrev = document.getElementById('btnPrev');
+        const btnNext = document.getElementById('btnNext');
+        const btnSave = document.getElementById('btnSave');
+
+        const tabButtons = Array.from(document.querySelectorAll('[data-bs-toggle="pill"]'));
+        let i = 0;
+
+        function updateButtons(idx) {
+            btnPrev.disabled = (idx === 0);
+            btnNext.classList.toggle('d-none', idx === tabButtons.length - 1);
+            btnSave.classList.toggle('d-none', idx !== tabButtons.length - 1);
+        }
+
+        function activate(idx) {
+            const tab = bootstrap.Tab.getOrCreateInstance(tabButtons[idx]);
+            tab.show();
+            updateButtons(idx);
+        }
+
+        // cuando el usuario hace clic en la nav izquierda, sincronizamos i
+        tabButtons.forEach((btn, idx) => {
+            btn.addEventListener('shown.bs.tab', () => {
+                i = idx;
+                updateButtons(i);
+            });
+        });
+
+        btnNext.addEventListener('click', () => {
+            if (i < tabButtons.length - 1) {
+                i++;
+                activate(i);
+            }
+        });
+
+        btnPrev.addEventListener('click', () => {
+            if (i > 0) {
+                i--;
+                activate(i);
+            }
+        });
+
+        // estado inicial
+        activate(0);
+    });
+    </script>
+
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('divcontenedor').style.display = 'block';
@@ -362,127 +296,6 @@ table {
         }
     });
     </script>
-
-    <script type="text/javascript">
-    $(document).ready(function() {
-        var ruta = "{{ URL::to('/admin/roles/tabla') }}";
-        $('#tablaDatatable').load(ruta);
-        document.getElementById("divcontenedor").style.display = "block";
-    });
-    </script>
-
-    <script>
-    function verInformacion(id) {
-        window.location.href = "{{ url('/admin/roles/lista/permisos') }}/" + id;
-    }
-
-    // ver todos los permisos que existen
-    function vistaPermisos() {
-        window.location.href = "{{ url('/admin/roles/permisos/lista') }}";
-    }
-
-    function modalAgregar() {
-        document.getElementById("formulario-nuevo").reset();
-        $('#modalAgregar').modal('show');
-    }
-
-    function modalBorrar(id) {
-        // se obtiene el id del Rol a eliminar globalmente
-
-        $('#idborrar').val(id);
-        $('#modalBorrar').modal('show');
-    }
-
-    function borrar() {
-        openLoading()
-        // se envia el ID del Rol
-        var idrol = document.getElementById('idborrar').value;
-
-        var formData = new FormData();
-        formData.append('idrol', idrol);
-
-        axios.post(url + '/roles/borrar-global', formData, {})
-            .then((response) => {
-                closeLoading()
-                $('#modalBorrar').modal('hide');
-
-                if (response.data.success === 1) {
-                    toastr.success('Rol global eliminado');
-                    recargar();
-                } else {
-                    toastr.error('Error al eliminar');
-                }
-            })
-            .catch((error) => {
-                closeLoading();
-                toastr.error('Error al eliminar');
-            });
-    }
-
-    function agregarRol() {
-        var nombre = document.getElementById('nombre-nuevo').value;
-
-        if (nombre === '') {
-            toastr.error('Nombre es requerido')
-            return;
-        }
-
-        if (nombre.length > 30) {
-            toastr.error('Máximo 30 caracteres para Nombre')
-            return;
-        }
-
-        openLoading()
-        var formData = new FormData();
-        formData.append('nombre', nombre);
-
-        axios.post(url + '/permisos/nuevo-rol', formData, {})
-            .then((response) => {
-                closeLoading()
-
-                if (response.data.success === 1) {
-                    toastr.error('Rol Repetido', 'Cambiar de nombre');
-                } else if (response.data.success === 2) {
-                    $('#modalAgregar').modal('hide');
-                    recargar();
-                } else {
-                    toastr.error('Error al guardar');
-                }
-            })
-            .catch((error) => {
-                closeLoading()
-                toastr.error('Error al guardar');
-            });
-    }
-
-    function recargar() {
-        var ruta = "{{ url('/admin/roles/tabla') }}";
-        $('#tablaDatatable').load(ruta);
-    }
-
-
-    // PARA ACTUALIZAR TABLA DE COSTOS
-    function actualizarTabla() {
-
-        openLoading()
-
-        axios.post(url + '/actualizartabla', {})
-            .then((response) => {
-                closeLoading()
-
-                if (response.data.success === 1) {
-                    toastr.success('completado');
-                } else {
-                    toastr.error('Error al guardar');
-                }
-            })
-            .catch((error) => {
-                closeLoading()
-                toastr.error('Error al guardar');
-            });
-    }
-    </script>
-
 
 
     @stop

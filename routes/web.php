@@ -63,6 +63,8 @@ Route::put('/admin/acceso/update/{acceso}', [AccesoFrontendController::class, 'u
 Route::delete('/admin/acceso/{acceso}', [AccesoFrontendController::class, 'destroy'])->name('admin.accesos.destroy');
 
 
+
+//estas despues la voy a quitar 
 Route::get('/index', [ControlAeronaveController::class, 'index'])->name('admin.controlaeronave.index');
 Route::get('/create', [ControlAeronaveController::class, 'create'])->name('admin.controlaeronave.create');
 Route::post('/store', [ControlAeronaveController::class, 'store'])->name('admin.controlaeronave.store');
@@ -75,13 +77,6 @@ Route::delete('/{control}', [ControlAeronaveController::class, 'destroy'])->name
 Route::post('/store-acceso', [ControlAeronaveController::class, 'storeAcceso'])->name('admin.controlaeronave.storeAcceso');
 // Tu resource del control (ajusta los métodos que uses)
 Route::resource('control-aeronave', ControlAeronaveController::class);
-
-// Listar accesos de un control (JSON para modal y detalles)
-Route::get('accesos-personal/{control}', [accesos_personalController::class, 'index'])->name('accesos-personal.index');
-// Crear acceso desde el modal (POST)
-Route::post('accesos-personal', [accesos_personalController::class, 'store'])->name('accesos-personal.store');
-// Eliminar un acceso (DELETE)
-Route::delete('accesos-personal/{acceso}', [accesos_personalController::class, 'destroy'])->name('accesos-personal.destroy');
 
 
 //RUTAS DE VUELO
@@ -199,3 +194,57 @@ Route::get('/reportes/control-aeronave/{id}/pdf', [ReportController::class, 'con
 
 // (Opcional) vista HTML para previsualizar antes de exportar
 Route::get('/reportes/control-aeronave/{id}/preview', [ReportController::class, 'controlAeronavePreview'])->name('reportes.control_aeronave.preview');
+
+
+
+
+//nuevas rutas para controlAeronaveController y accesosPerosnaController
+
+Route::get('/admin/controlaeronave', [ControlAeronaveController::class, 'index1'])
+    ->name('admin.controlaeronave.index');
+
+
+Route::get('/admin/controlaeronave/{control}/edit', [ControlAeronaveController::class, 'edit1'])
+    ->name('admin.controlaeronave.edit');
+Route::put('/admin/controlaeronave/{control}', [ControlAeronaveController::class, 'update1'])
+    ->name('admin.controlaeronave.update');
+Route::delete('/admin/controlaeronave/{control}', [ControlAeronaveController::class, 'destroy1'])
+    ->name('admin.controlaeronave.destroy');
+
+// ACCESOS (modal)
+Route::get('/admin/controlaeronave/{control}/accesos', [ControlAeronaveController::class, 'accesosIndex'])
+    ->name('accesos-personal.index');
+Route::post('/admin/controlaeronave/accesos', [ControlAeronaveController::class, 'accesosStore'])
+    ->name('accesos-personal.store');
+Route::delete('/admin/controlaeronave/accesos/{acceso}', [ControlAeronaveController::class, 'accesosDestroy'])
+    ->name('accesos-personal.destroy');
+
+
+
+
+// LISTA (usa tu index.blade.php)
+Route::get('/admin/controlaeronave',            [ControlAeronaveController::class, 'index'])->name('admin.controlaeronave.index');
+
+// CREATE (usa tu create.blade.php)
+Route::get('/admin/controlaeronave/create',     [ControlAeronaveController::class, 'create'])->name('admin.controlaeronave.create');
+Route::post('/admin/controlaeronave',           [ControlAeronaveController::class, 'store'])->name('admin.controlaeronave.store');
+
+// EDIT / UPDATE / DESTROY (cuando los habilites)
+Route::get('/admin/controlaeronave/{vuelo}/edit',  [ControlAeronaveController::class, 'edit'])->name('admin.controlaeronave.edit');
+Route::put('/admin/controlaeronave/{vuelo}',       [ControlAeronaveController::class, 'update'])->name('admin.controlaeronave.update');
+Route::delete('/admin/controlaeronave/{vuelo}',    [ControlAeronaveController::class, 'destroy'])->name('admin.controlaeronave.destroy');
+
+// RUTAS para el MODAL “Accesos”
+// JSON para tablas (modal/detalles)
+Route::get('/admin/controlaeronave/{control}/accesos', [accesos_personalController::class, 'index'])->name('accesos-personal.index');
+
+// Guardar desde el modal
+Route::post('/admin/controlaeronave/accesos', [accesos_personalController::class, 'store'])->name('accesos-personal.store');
+
+// Eliminar uno
+Route::delete('/admin/controlaeronave/accesos/{acceso}', [accesos_personalController::class, 'destroy'])->name('accesos-personal.destroy');
+
+
+
+Route::get('/admin/controlaeronave/create', [ControlAeronaveController::class, 'create1'])->name('admin.controlaeronave.create');
+Route::post('/admin/controlaeronave', [ControlAeronaveController::class, 'store1'])->name('admin.controlaeronave.store');
