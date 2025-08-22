@@ -69,6 +69,7 @@ table {
 
                 <form action="{{ route('admin.controlaeronave.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
+                   <input type="hidden" name="vuelo_id" value="{{ old('vuelo_id', optional($vuelo)->id) }}">
 
                     <div class="card-body">
                         <div class="row g-3">
@@ -77,12 +78,12 @@ table {
                                 <div class="nav flex-lg-column nav-pills gap-2" role="tablist">
 
                                     <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-procesos"
-                                        type="button">1. Tiempos Operativos</button>
+                                        type="button">1. Tiempos Operativos </button>
 
                                     <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-demoras"
-                                        type="button">2. Demoras y pax</button>
+                                        type="button">2. Demoras y pax </button>
                                     <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-seg"
-                                        type="button">3. Seguridad / adjuntos</button>
+                                        type="button">3. Operadores </button>
                                     <!-- <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-acce"
                                         type="button">5. Datos de accesos Y QUITAR TAMBIEN YA ESTA EN EL MODAL</button> -->
                                 </div>
@@ -106,44 +107,42 @@ table {
                                                 <tbody>
                                                     <tr>
                                                         <td>Desabordaje</td>
-                                                        <td><input type="time" name="desabordaje_inicio"
+                                                        <td><input type="time" name="tiempos[desabordaje_inicio]"
                                                                 class="form-control" required></td>
-                                                        <td><input type="time" name="desabordaje_fin"
+                                                        <td><input type="time" name="tiempos[desabordaje_fin]"
                                                                 class="form-control" required></td>
                                                     </tr>
                                                     <tr>
                                                         <td>Inspección cabina</td>
-                                                        <td><input type="time" name="inspeccion_cabina_inicio"
+                                                        <td><input type="time" name="tiempos[inspeccion_cabina_inicio]"
                                                                 class="form-control" required></td>
-                                                        <td><input type="time" name="inspeccion_cabina_fin"
+                                                        <td><input type="time" name="tiempos[inspeccion_cabina_fin]"
                                                                 class="form-control" required></td>
                                                     </tr>
                                                     <tr>
                                                         <td>Aseo (personal)</td>
-                                                        <td><input type="time" name="aseo_ingreso" class="form-control"
-                                                                required></td>
-                                                        <td><input type="time" name="aseo_salida" class="form-control"
-                                                                required></td>
+                                                        <td><input type="time" name="tiempos[aseo_ingreso]"
+                                                                class="form-control" required></td>
+                                                        <td><input type="time" name="tiempos[aseo_salida]"
+                                                                class="form-control" required></td>
                                                     </tr>
                                                     <tr>
                                                         <td>Tripulación</td>
-                                                        <td><input type="time" name="tripulacion_ingreso"
+                                                        <td><input type="time" name="tiempos[tripulacion_ingreso]"
                                                                 class="form-control" required>
                                                         </td>
-                                                        <td><input type="time" name="salida_itinerario"
-                                                                class="form-control" required></td>
                                                     </tr>
                                                     <tr>
                                                         <td>Abordaje</td>
-                                                        <td><input type="time" name="abordaje_inicio"
+                                                        <td><input type="time" name="tiempos[abordaje_inicio]"
                                                                 class="form-control" required></td>
-                                                        <td><input type="time" name="abordaje_fin" class="form-control"
-                                                                required></td>
+                                                        <td><input type="time" name="tiempos[abordaje_fin]"
+                                                                class="form-control" required></td>
                                                     </tr>
                                                     <tr>
                                                         <td>Cierre de puerta</td>
-                                                        <td><input type="time" name="cierre_puerta" class="form-control"
-                                                                required></td>
+                                                        <td><input type="time" name="tiempos[cierre_puerta]"
+                                                                class="form-control" required></td>
                                                         <td></td>
                                                     </tr>
                                                 </tbody>
@@ -156,18 +155,19 @@ table {
                                         <div class="row g-3">
                                             <div class="col-sm-3">
                                                 <label class="form-label">Tiempo (min)</label>
-                                                <input type="number" min="0" step="1" name="demora_tiempo"
-                                                    class="form-control" required>
+                                                <input type="number" min="0" step="1" name="demoras[minutos]" min="0"
+                                                    step="1" class="form-control" required>
                                             </div>
                                             <div class="col-sm-9">
                                                 <label class="form-label">Motivo de demora</label>
-                                                <input type="text" name="demora_motivo" class="form-control" required>
+                                                <input type="text" name="demoras[motivo]" maxlength="200"
+                                                    class="form-control" required>
                                             </div>
 
                                             <div class="col-sm-4">
                                                 <label class="form-label">Agente ID</label>
-                                                <input type="text" name="agemte_id" min="1" class="form-control"
-                                                    required>
+                                                <input type="text" name="demoras[agente_id]" min="1" step="1"
+                                                    class="form-control" required>
                                             </div>
 
                                         </div>
@@ -178,17 +178,17 @@ table {
                                         <div class="row g-3">
                                             <div class="col-md-6">
                                                 <label class="form-label">Codigo</label>
-                                                <input type="text" name="codigo" class="form-control" required>
+                                                <input type="text" name="operador[codigo]" class="form-control"
+                                                    required>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label">Nombre</label>
-                                                <input type="text" name="nombre" class="form-control" required>
+                                                <input type="text" name="operador[nombre]" class="form-control"
+                                                    required>
                                             </div>
 
                                         </div>
                                     </div>
-
-
 
 
                                 </div><!-- /content -->

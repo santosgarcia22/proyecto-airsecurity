@@ -272,7 +272,7 @@ body.layout-navbar-fixed .wrapper>.content-wrapper {
                                         <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal"
                                             data-target="#accModal" data-control-id="{{ $it->id_control_aeronave }}"
                                             data-get-url="{{ route('accesos-personal.index', $it->id_control_aeronave) }}">
-                                            Accesos
+                                            Personas Accesos
                                         </button>
                                         <button type="button" id="btn-{{ $it->id_control_aeronave }}"
                                             class="btn btn-outline-secondary btn-sm me-1"
@@ -295,7 +295,6 @@ body.layout-navbar-fixed .wrapper>.content-wrapper {
                                 <tr id="det-{{ $it->id_control_aeronave }}" class="details-row bg-light">
                                     <td colspan="7">
                                         <div class="det-wrap">
-
                                             {{-- Resumen de cabecera en chips --}}
                                             <div class="summary-chips">
                                                 <span class="chip"><i class="bi bi-hash"></i>
