@@ -21,7 +21,7 @@ return new class extends Migration
                 $table->string('nombre',120);
                 $table->string('identificacion',50)->nullable();
                 $table->string('empresa',150)->nullable();
-                $table->strign('herramientas',120)->nullable();
+                $table->string('herramientas',120)->nullable();
                 $table->string('motivo_entrada',20)->nullable();
                 $table->time('hora_entrada')->nullable();
                 $table->time('hora_salida')->nullable();

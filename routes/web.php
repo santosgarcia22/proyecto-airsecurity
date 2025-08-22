@@ -22,6 +22,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ControlAeronaveController;
 use App\Http\Controllers\accesos_personalController;
 use App\Http\Controllers\VuelosController;
+use App\Http\Controllers\OperadoresController;
 
 
 // --- LOGIN ---
@@ -106,6 +107,12 @@ Route::put('/admin/vuelos/{vuelo}', [VuelosController::class, 'update'])->name('
 Route::delete('/admin/vuelos/{vuelo}', [VuelosController::class, 'destroy'])->name('admin.vuelo.destroy')->whereNumber('vuelo');
 
 
+//RUTAS DE OPERADORES PARA MODAL EN LA VISTA VUELOS
+Route::get('/admin/operadores', [OperadoresController::class, 'index'])->name('admin.operador.index');
+Route::post('/admin/operadores', [OperadoresController::class, 'store'])->name('admin.operador.store');
+Route::delete('/admin/operadores/{operador}', [OperadoresController::class, 'destroy'])->name('admin.operador.destroy');
+
+
 // RUTAS DE TIPO
 
 Route::get('/admin/tipo/index', [tipoController::class, 'index'])->name('admin.tipo.index');
@@ -185,8 +192,6 @@ Route::get('/reportes/usuariosapp', [ReportController::class, 'reporteUsuariosAp
 Route::get('/control-aeronave', [ReportController::class, 'controlAeronaveIndex'])->name('reportes.control_aeronave.index');
     // PDF por registro
 Route::get('/control-aeronave/{id}/pdf', [ReportController::class, 'controlAeronavePdf'])->name('reportes.control_aeronave.pdf');
-
-
 // routes/web.php
 Route::get('/reportes/control-aeronave/{id}/pdf',[ReportController::class, 'pdf'])->name('reportes.control_aeronave.pdf');
 

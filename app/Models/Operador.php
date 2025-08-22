@@ -10,6 +10,7 @@ class Operador extends Model
     use HasFactory;
 
     protected $table = 'operadores';
+    protected $primaryKey = 'id';
     protected $fillable = ['codigo','nombre'];
 
     public function vuelos()

@@ -53,6 +53,9 @@ public function __construct()
        // return view('vuelos.create', compact('operadores','coordinadores','lideres'));
     }
 
+
+
+
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -74,7 +77,8 @@ public function __construct()
 
         $vuelo = Vuelo::create($data);
 
-        return redirect()->route('vuelos.index', $vuelo)->with('success','Vuelo creado.');
+       return redirect()->route('admin.vuelo.index')->with('success','Vuelo creado.');
+
     }
 
     public function show(Vuelo $vuelo)
@@ -113,13 +117,13 @@ public function __construct()
 
         $vuelo->update($data);
 
-        return redirect()->route('vuelos.show', $vuelo)->with('success','Vuelo actualizado.');
+        return redirect()->route('admin.vuelo.show', $vuelo)->with('success','Vuelo actualizado.');
     }
 
     public function destroy(Vuelo $vuelo)
     {
         $vuelo->delete();
-        return redirect()->route('vuelos.index')->with('success','Vuelo eliminado.');
+        return redirect()->route('admin.vuelo.index')->with('success','Vuelo eliminado.');
     }
 
 
