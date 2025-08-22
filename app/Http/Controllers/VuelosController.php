@@ -54,7 +54,7 @@ public function __construct()
     }
 
 
-    
+
 
     public function store(Request $request)
     {
@@ -117,7 +117,7 @@ public function __construct()
 
         $vuelo->update($data);
 
-        return redirect()->route('admin.vuelos.show', $vuelo)->with('success','Vuelo actualizado.');
+        return redirect()->route('admin.vuelo.show', $vuelo)->with('success','Vuelo actualizado.');
     }
 
     public function destroy(Vuelo $vuelo)
