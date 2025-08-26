@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title> Panel</title>
 
@@ -26,73 +26,88 @@
  -->
 
 <body class="sidebar-mini sidebar-closed sidebar-collapse" style="height: auto;">
+
+    <!-- 🔹 Preloader -->
+    <div id="global-preloader" style="position:fixed;top:0;left:0;width:100%;height:100%;
+            background:#fff;z-index:9999;display:flex;
+            align-items:center;justify-content:center;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+            opacity:1; visibility:visible;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Cargando...</span>
+        </div>
+    </div>
     <div class="wrapper">
         @include("backend.menus.navbar")
         @include("backend.menus.sidebar")
 
-        <div id="iframe-loader"
-            style="position:absolute;top:0;left:0;width:100%;height:100%;background:#fff;z-index:10;text-align:center;padding:20px;">
-            Cargando...
-        </div>
-
         <div class="content-wrapper" style=" background-color: #fff;">
             <!-- redireccionamiento de vista -->
-
             <iframe style="width: 100%; resize: initial; overflow: hidden; min-height: 96vh" frameborder="0"
-                scrolling="" id="frameprincipal" src="" name="frameprincipal">
-            </iframe>
-
+                id="frameprincipal" name="frameprincipal"></iframe>
         </div>
 
         @include("backend.menus.footer")
-
     </div>
 
-
-    <script src="{{ asset('js/jquery.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('js/bootstrap.bundle.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('js/adminlte.min.js') }}" type="text/javascript"></script>
-
+    <script src="{{ asset('js/jquery.min.js') }}"></script>
+    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('js/adminlte.min.js') }}"></script>
 
     @yield('content-admin-js')
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const iframe = document.getElementById('frameprincipal');
-        const loader = document.getElementById('iframe-loader');
-        const storedUrl = localStorage.getItem('iframeUrl');
-        if (storedUrl) {
-            iframe.src = storedUrl;
+        const preloader = document.getElementById('global-preloader');
+
+        function hidePreloader() {
+            preloader.style.opacity = "0";
+            preloader.style.visibility = "hidden";
+            setTimeout(() => preloader.style.display = "none", 500);
+        }
+
+        function showPreloader() {
+            preloader.style.display = "flex";
+            preloader.style.opacity = "1";
+            preloader.style.visibility = "visible";
+        }
+
+        // 🔹 Recuperar última URL al recargar
+        const lastUrl = localStorage.getItem("lastIframeUrl");
+        if (lastUrl) {
+            iframe.src = lastUrl;
         } else {
-            iframe.src = "{{ route($ruta) }}";
+            // Si no hay nada guardado, cargar un dashboard por defecto
+            iframe.src = "/admin/dashboard";
         }
-        iframe.onload = function() {
-            loader.style.display = 'none';
-        };
+
+        // 🔹 Guardar URL cada vez que el iframe cambia
+        iframe.addEventListener("load", () => {
+            hidePreloader();
+            try {
+                localStorage.setItem("lastIframeUrl", iframe.contentWindow.location.href);
+            } catch (e) {
+                console.warn("No se pudo guardar la URL del iframe:", e);
+            }
+        });
+
+        // 🔹 Detectar clicks en el menú
+        document.querySelectorAll('.nav-link[target="frameprincipal"]').forEach(link => {
+            link.addEventListener("click", (e) => {
+                const url = link.getAttribute("href");
+                if (url) {
+                    localStorage.setItem("lastIframeUrl", url);
+                }
+                showPreloader();
+                setTimeout(hidePreloader, 5000); // seguridad
+            });
+        });
     });
     </script>
 
-    <script>
-    function guardarUltimaVista(event, url) {
-        // Guardar la URL de la vista en localStorage
-        localStorage.setItem('ultimaVista', url);
-    }
-
-    // Al cargar la página, verifica si hay una vista guardada
-    document.addEventListener('DOMContentLoaded', function() {
-        var iframe = document.getElementById('frameprincipal');
-        var ultimaVista = localStorage.getItem('ultimaVista');
-        if (iframe && ultimaVista) {
-            iframe.src = ultimaVista;
-        }
-    });
-    </script>
- <!-- SweetAlert2 CDN -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="{{ asset('js/alerts.js') }}"></script>
-
-@include('components.chatbot-widget')
 
 </body>
+
 
 </html>

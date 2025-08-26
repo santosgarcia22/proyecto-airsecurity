@@ -1,35 +1,138 @@
 @extends('backend.menus.superior')
 
 @section('content-admin-css')
-<link href="{{ asset('css/adminlte.min.css') }}" rel="stylesheet" />
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+
 <style>
+body {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+body.loaded {
+    visibility: visible;
+    opacity: 1;
+}
+
+
+
 /* ====== layout/espaciado ====== */
 .content-wrapper {
     padding-top: 1rem
 }
 
-@media (min-width: 992px) {
-    body .content-wrapper {
-        margin-top: 90px
+.page-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 255, 255, .7);
+    display: none;
+    z-index: 9999;
+}
+
+.page-overlay.show {
+    display: block;
+}
+
+
+/* ====== Layout en pantallas MUY anchas ====== */
+@media (min-width: 1400px) {
+    .container-fluid.limited {
+        max-width: 1400px;
+        /* 1280–1440 funciona bien */
+        margin-left: auto;
+        margin-right: auto;
     }
+}
+
+/* ====== Tabla ====== */
+.table thead th {
+    white-space: nowrap;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.text-tight {
+    white-space: nowrap;
+}
+
+/* Columna Opciones: ancho adaptativo */
+@media (min-width: 1200px) {
+    .col-opts {
+        width: 360px;
+    }
+}
+
+@media (min-width: 992px) and (max-width:1199.98px) {
+    .col-opts {
+        width: 300px;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .col-opts {
+        width: 1%;
+    }
+}
+
+/* que no empuje la fila */
+
+/* Grupo de botones responsive */
+.btn-opts {
+    display: inline-flex;
+    gap: .35rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.btn-opts .btn {
+    padding-inline: .55rem;
+}
+
+/* En pantallas chicas, solo íconos; en grandes, ícono + texto */
+.btn-text {
+    display: none;
+}
+
+@media (min-width: 1200px) {
+    .btn-text {
+        display: inline;
+    }
+}
+
+/* xl en adelante */
+
+/* Filtros: que respiren y no se rompan */
+.filters .form-control,
+.filters .form-select,
+.filters .btn {
+    height: 42px;
 }
 
 @media (max-width: 767.98px) {
-    body .content-wrapper {
-        margin-top: 56px
+
+    .filters .col-auto,
+    .filters .ms-auto {
+        width: 100%;
+    }
+
+    .filters .w-220 {
+        width: 100% !important;
     }
 }
 
-body.layout-navbar-fixed .wrapper>.content-wrapper {
-    margin-top: 110px !important
-}
+/* Celdas de detalle: grid más flexible en móviles */
+@media (max-width: 575.98px) {
+    .kv-grid {
+        grid-template-columns: 1fr;
+    }
 
-@media(max-width: 991.98px) {
-    body.layout-navbar-fixed .wrapper>.content-wrapper {
-        margin-top: 80px !important
+    .details-grid {
+        grid-template-columns: 1fr;
     }
 }
+
 
 .table td,
 .table th {
@@ -80,9 +183,9 @@ body.layout-navbar-fixed .wrapper>.content-wrapper {
 .table thead tr th {
     background: #2f57ff;
     color: #fff;
-    font-weight: 500;
+    font-weight: 900;
     border-color: #2a4be6;
-    height: 10px
+    height: 5px
 }
 
 .table-hover tbody tr:hover {
@@ -193,6 +296,21 @@ body.layout-navbar-fixed .wrapper>.content-wrapper {
     border-radius: 8px;
 }
 
+    /* 
+    css de preloader */
+#preloader {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  z-index: 9999;
+}
+body.loaded #preloader {
+  display: none;
+}
+
 /* tabla de accesos dentro de detalles, tal cual la tienes */
 </style>
 @endsection
@@ -204,8 +322,14 @@ body.layout-navbar-fixed .wrapper>.content-wrapper {
         <div class="container-fluid d-flex justify-content-between align-items-center"></div>
     </section>
 
+    <div id="preloader">
+        <div class="spinner-border text-primary" role="status"></div>
+    </div>
+
+
+
     <section class="content">
-        <div class="container-fluid">
+        <div class="container-fluid limited">
             <div class="card card-elevated">
                 <div class="card-titlebar d-flex justify-content-between align-items-center">
                     <span>Lista de Accesos Aeronave</span>
@@ -237,7 +361,7 @@ body.layout-navbar-fixed .wrapper>.content-wrapper {
 
                         <div class="col ms-auto" style="padding-left: 0">
                             <a href="{{ route('admin.controlaeronave.create') }}" class="btn btn-outline-primary">
-                                <i class="bi bi-pencil-square me-1"></i> Nuevo Acceso
+                                <i class="bi bi-pencil-square me-1"></i> Registrar Tiempos y demoras
                             </a>
                         </div>
                     </form>
@@ -253,7 +377,8 @@ body.layout-navbar-fixed .wrapper>.content-wrapper {
                                     <th>Origen</th>
                                     <th>Destino</th>
                                     <th>Hora llegada</th>
-                                    <th class="text-end" style="width:320px">Opciones</th>
+                                    <th class="text-end text-tight col-opts">Opciones</th>
+
                                 </tr>
                             </thead>
                             <tbody>
@@ -267,29 +392,105 @@ body.layout-navbar-fixed .wrapper>.content-wrapper {
                                     <td class="text-capitalize">{{ $it->destino }}</td>
                                     <td>{{ $it->hora_llegada }}</td>
                                     <td class="text-end">
+                                        <div class="btn-group btn-group-sm btn-opts">
 
-                                        {{-- ABRIR MODAL Accesos (NO cambiar diseño) --}}
-                                        <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal"
-                                            data-target="#accModal" data-control-id="{{ $it->id_control_aeronave }}"
-                                            data-get-url="{{ route('accesos-personal.index', $it->id_control_aeronave) }}">
-                                            Personas Accesos
-                                        </button>
-                                        <button type="button" id="btn-{{ $it->id_control_aeronave }}"
-                                            class="btn btn-outline-secondary btn-sm me-1"
-                                            onclick="toggleDet({{ $it->id_control_aeronave }})">
-                                            Ver detalles
-                                        </button>
+                                            {{-- Accesos / Completar --}}
+                                            @if($it->encabezado_ok)
+                                            <button type="button" class="btn btn-outline-primary" data-toggle="modal"
+                                                data-target="#accModal" data-control-id="{{ $it->id_control_aeronave }}"
+                                                data-get-url="{{ route('accesos-personal.index', $it->id_control_aeronave) }}"
+                                                title="Accesos">
+                                                <i class="bi bi-people"></i> <span class="btn-text">Accesos</span>
+                                            </button>
+                                            @else
+                                            <a href="{{ route('admin.controlaeronave.create', ['vuelo_id' => $it->id_control_aeronave]) }}"
+                                                class="btn btn-warning" title="Completar datos">
+                                                <i class="bi bi-clipboard-check"></i> <span
+                                                    class="btn-text">Completar</span>
+                                            </a>
+                                            @endif
 
-                                        <a href="{{ route('admin.controlaeronave.edit', $it->id_control_aeronave) }}"
-                                            class="btn btn-info btn-sm me-1">Editar</a>
-                                        <button class="btn btn-danger btn-sm btn-eliminar"
-                                            data-url="{{ route('admin.controlaeronave.destroy', $it->id_control_aeronave) }}"
-                                            data-token="{{ csrf_token() }}">
-                                            <i class="bi bi-trash"></i> Eliminar
-                                        </button>
+                                            {{-- Ver/Ocultar detalles --}}
+                                            <button type="button" id="btn-{{ $it->id_control_aeronave }}"
+                                                class="btn btn-outline-secondary"
+                                                onclick="toggleDet({{ $it->id_control_aeronave }})"
+                                                title="Ver detalles">
+                                                <i class="bi bi-list-ul"></i> <span class="btn-text">Detalles</span>
+                                            </button>
 
+                                            {{-- Editar --}}
+                                            <a href="{{ route('admin.controlaeronave.edit', $it->id_control_aeronave) }}"
+                                                class="btn btn-info" title="Editar">
+                                                <i class="bi bi-pencil-square"></i> <span class="btn-text">Editar</span>
+                                            </a>
+
+                                            {{-- Eliminar --}}
+                                            <button class="btn btn-danger btn-sm btn-eliminar"
+                                                data-url="{{ route('admin.controlaeronave.destroy', $it->id_control_aeronave) }}"
+                                                data-token="{{ csrf_token() }}" title="Eliminar">
+                                                <i class="bi bi-trash"></i> <span class="btn-text">Eliminar</span>
+                                            </button>
+
+                                        </div>
                                     </td>
+
+                                    <!-- <div class="dropdown d-md-none">
+                                        <button class="btn btn-outline-secondary btn-sm" data-toggle="dropdown"
+                                            title="Opciones">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-right">
+                                         poner aquí los <a> o <button> con las mismas acciones 
+
+                                            {{-- Accesos / Completar --}}
+                                            @if($it->encabezado_ok)
+                                            <button type="button" class="btn btn-outline-primary" data-toggle="modal"
+                                                data-target="#accModal" data-control-id="{{ $it->id_control_aeronave }}"
+                                                data-get-url="{{ route('accesos-personal.index', $it->id_control_aeronave) }}"
+                                                title="Accesos">
+                                                <i class="bi bi-people"></i> <span class="btn-text">Accesos</span>
+                                            </button>
+                                            @else
+                                            <a href="{{ route('admin.controlaeronave.create', ['vuelo_id' => $it->id_control_aeronave]) }}"
+                                                class="btn btn-warning" title="Completar datos">
+                                                <i class="bi bi-clipboard-check"></i> <span
+                                                    class="btn-text">Completar</span>
+                                            </a>
+                                            @endif
+
+                                            {{-- Ver/Ocultar detalles --}}
+                                            <button type="button" id="btn-{{ $it->id_control_aeronave }}"
+                                                class="btn btn-outline-secondary"
+                                                onclick="toggleDet({{ $it->id_control_aeronave }})"
+                                                title="Ver detalles">
+                                                <i class="bi bi-list-ul"></i> <span class="btn-text">Detalles</span>
+                                            </button>
+
+                                            {{-- Editar --}}
+                                            <a href="{{ route('admin.controlaeronave.edit', $it->id_control_aeronave) }}"
+                                                class="btn btn-info" title="Editar">
+                                                <i class="bi bi-pencil-square"></i> <span class="btn-text">Editar</span>
+                                            </a>
+
+                                            {{-- Eliminar --}}
+                                            <button class="btn btn-danger btn-sm btn-eliminar"
+                                                data-url="{{ route('admin.controlaeronave.destroy', $it->id_control_aeronave) }}"
+                                                data-token="{{ csrf_token() }}" title="Eliminar">
+                                                <i class="bi bi-trash"></i> <span class="btn-text">Eliminar</span>
+                                            </button>
+
+                                        </div>
+                                    </div> -->
+
+
                                 </tr>
+
+
+                                <!-- <button class="btn btn-danger btn-sm btn-eliminar"
+                                    data-url="{{ route('admin.controlaeronave.destroy', $it->id_control_aeronave) }}"
+                                    data-token="{{ csrf_token() }}">
+                                    <i class="bi bi-trash"></i> Eliminar
+                                </button> -->
 
                                 {{-- Fila de DETALLES (no tocamos el diseño de la tabla inferior) --}}
                                 <tr id="det-{{ $it->id_control_aeronave }}" class="details-row bg-light">
@@ -591,14 +792,54 @@ body.layout-navbar-fixed .wrapper>.content-wrapper {
     </div>
 </div>
 
+<script>
+document.querySelector('.filters').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const url = this.action || window.location.pathname;
+    const params = new URLSearchParams(new FormData(this)).toString();
+
+    fetch(url + '?' + params, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(r => r.text())
+        .then(html => {
+            // suponiendo que el servidor devuelve un partial con solo la tabla
+            document.querySelector('#tablaCA').innerHTML =
+                $(html).find('#tablaCA').html();
+        });
+});
+</script>
+
+
 
 @extends('backend.menus.footerjs')
 @section('content-admin-js')
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    // asegura que la página se muestre aunque no haya cargado TODO
+    setTimeout(() => {
+        document.body.classList.add('loaded');
+    }, 200); // 200ms, ajustable
+});
+</script>
 
 
 {{-- jQuery + Bootstrap 4.6 bundle (incluye Popper) --}}
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const toOpen = "{{ request('open') }}";
+    if (toOpen) {
+        const btn = document.querySelector(
+            `button[data-control-id="${toOpen}"][data-target="#accModal"]`
+        );
+        if (btn) btn.click();
+    }
+});
+</script>
 
 
 </script>

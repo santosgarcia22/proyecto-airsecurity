@@ -18,60 +18,55 @@ class ControlAeronaveController extends Controller
      *  INDEX: lista VUELOS para la vista
      * =========================== */
     public function index(Request $request)
-    {
-        $perPage = (int) $request->input('per_page', 10);
+{
+    $perPage = (int) $request->input('per_page', 10);
 
-        $q = vuelo::query()
-            ->leftJoin('tiempos_operativos as t', 't.vuelo_id', '=', 'vuelos.id')
-            ->leftJoin('demoras as d', 'd.vuelo_id', '=', 'vuelos.id')
-            ->leftJoin('operadores as o', 'o.id', '=', 'vuelos.operador_id')
-            ->select([
-                // ==== Aliases para que tu Blade NO cambie ====
-                'vuelos.id as id_control_aeronave',
-                'vuelos.fecha as fecha',
-                DB::raw("COALESCE(vuelos.numero_vuelo_llegando, vuelos.numero_vuelo_saliendo) as numero_vuelo"),
-                'vuelos.origen as origen',
-                'vuelos.destino as destino',
-                'vuelos.hora_llegada_real as hora_llegada',
-                'vuelos.posicion_llegada as posicion_llegada',
-                'vuelos.matricula as matricula_operador',
-                'vuelos.total_pax as total_pax',
-                'vuelos.hora_salida_itinerario as salida_itinerario',
-                'vuelos.hora_salida_pushback as hora_real_salida',
+    $q = vuelo::query()
+        ->leftJoin('tiempos_operativos as t', 't.vuelo_id', '=', 'vuelos.id')
+        ->leftJoin('demoras as d', 'd.vuelo_id', '=', 'vuelos.id')
+        ->leftJoin('operadores as o', 'o.id', '=', 'vuelos.operador_id')
+        ->select([
+            'vuelos.id as id_control_aeronave',
+            'vuelos.fecha',
+            DB::raw("COALESCE(vuelos.numero_vuelo_llegando, vuelos.numero_vuelo_saliendo) as numero_vuelo"),
+            'vuelos.origen',
+            'vuelos.destino',
+            'vuelos.hora_llegada_real as hora_llegada',
+            'vuelos.posicion_llegada',
+            'vuelos.matricula as matricula_operador',
+            'vuelos.total_pax',
+            'vuelos.hora_salida_itinerario as salida_itinerario',
+            'vuelos.hora_salida_pushback as hora_real_salida',
 
-                // tiempos (detalle)
-                't.desabordaje_inicio',
-                't.desabordaje_fin',
-                't.inspeccion_cabina_inicio',
-                't.inspeccion_cabina_fin',
-                't.aseo_ingreso',
-                't.aseo_salida',
-                't.tripulacion_ingreso',
-                't.abordaje_inicio',
-                't.abordaje_fin',
-                't.cierre_puerta',
+            // tiempos
+            't.desabordaje_inicio','t.desabordaje_fin',
+            't.inspeccion_cabina_inicio','t.inspeccion_cabina_fin',
+            't.aseo_ingreso','t.aseo_salida','t.tripulacion_ingreso',
+            't.abordaje_inicio','t.abordaje_fin','t.cierre_puerta',
 
-                // demoras (detalle)
-                'd.minutos as demora_tiempo',
-                'd.motivo as demora_motivo',
-            ]);
+            // demoras
+            'd.minutos as demora_tiempo','d.motivo as demora_motivo',
 
-        // ==== Filtros como en tu Blade ====
-        if ($request->filled('numero_vuelo')) {
-            $nv = $request->input('numero_vuelo');
-            $q->where(function($w) use ($nv) {
-                $w->where('vuelos.numero_vuelo_llegando', 'like', "%{$nv}%")
-                  ->orWhere('vuelos.numero_vuelo_saliendo', 'like', "%{$nv}%");
-            });
-        }
-        if ($request->filled('fecha')) {
-            $q->whereDate('vuelos.fecha', $request->input('fecha'));
-        }
+            // bandera de encabezado listo
+            DB::raw('CASE WHEN t.vuelo_id IS NULL THEN 0 ELSE 1 END as encabezado_ok'),
+        ]);
 
-        $items = $q->orderByDesc('vuelos.id')->paginate($perPage);
-
-        return view('controlaeronave.index', compact('items'));
+    if ($request->filled('numero_vuelo')) {
+        $nv = $request->input('numero_vuelo');
+        $q->where(function($w) use ($nv) {
+            $w->where('vuelos.numero_vuelo_llegando', 'like', "%{$nv}%")
+              ->orWhere('vuelos.numero_vuelo_saliendo', 'like', "%{$nv}%");
+        });
     }
+    if ($request->filled('fecha')) {
+        $q->whereDate('vuelos.fecha', $request->input('fecha'));
+    }
+
+    $items = $q->orderByDesc('vuelos.id')->paginate($perPage);
+
+    return view('controlaeronave.index', compact('items'));
+}
+
 
     /* ===========================
      *  ACCESOS (modal)
@@ -130,11 +125,11 @@ class ControlAeronaveController extends Controller
      *  Los dejo como placeholders seguros.
      * =========================== */
 
-      public function create()
-    {
+    //   public function create()
+    // {
     
-        return view('/controlaeronave/create');
-    }
+    //     return view('/controlaezronave/creazzte');
+    // }
 
 
     public function edit1($id)
@@ -152,90 +147,78 @@ class ControlAeronaveController extends Controller
             if ($request->filled('vuelo_id')) {
                 $vuelo = vuelo::findOrFail($request->vuelo_id);
             }
-
             $operadores = Operador::orderBy('nombre')->get(['id','codigo','nombre']);
+
             return view('controlaeronave.create', compact('operadores','vuelo'));
         }
 
-      public function store1(Request $request)
-        {
-            $data = $request->validate([
-                'vuelo_id'                      => 'required|exists:vuelos,id',
 
-                // OPERADOR (array)
-                'operador.codigo'               => 'required|string|max:50',
-                'operador.nombre'               => 'required|string|max:100',
+   public function store1(Request $request)
+    {
+        // DEBUG temporal: mira qué llega
+        // logger()->info('payload-create', $request->all());
+       // dd($request->only('vuelo_id','tiempos','demoras'));
 
-                // TIEMPOS (array)
-                'tiempos.desabordaje_inicio'       => 'nullable|date_format:H:i',
-                'tiempos.desabordaje_fin'          => 'nullable|date_format:H:i',
-                'tiempos.inspeccion_cabina_inicio' => 'nullable|date_format:H:i',
-                'tiempos.inspeccion_cabina_fin'    => 'nullable|date_format:H:i',
-                'tiempos.aseo_ingreso'             => 'nullable|date_format:H:i',
-                'tiempos.aseo_salida'              => 'nullable|date_format:H:i',
-                'tiempos.tripulacion_ingreso'      => 'nullable|date_format:H:i',
-                'tiempos.abordaje_inicio'          => 'nullable|date_format:H:i',
-                'tiempos.abordaje_fin'             => 'nullable|date_format:H:i',
-                'tiempos.cierre_puerta'            => 'nullable|date_format:H:i',
+        $data = $request->validate([
+            'vuelo_id' => 'required|exists:vuelos,id',
 
-                // DEMORAS (array)
-                'demoras.motivo'                  => 'nullable|string|max:200',
-                'demoras.minutos'                 => 'nullable|integer|min:0',
-                'demoras.agente_id'               => 'nullable|integer',
-            ]);
+            // TIEMPOS
+            'tiempos.desabordaje_inicio'       => 'nullable|date_format:H:i',
+            'tiempos.desabordaje_fin'          => 'nullable|date_format:H:i',
+            'tiempos.inspeccion_cabina_inicio' => 'nullable|date_format:H:i',
+            'tiempos.inspeccion_cabina_fin'    => 'nullable|date_format:H:i',
+            'tiempos.aseo_ingreso'             => 'nullable|date_format:H:i',
+            'tiempos.aseo_salida'              => 'nullable|date_format:H:i',
+            'tiempos.tripulacion_ingreso'      => 'nullable|date_format:H:i',
+            'tiempos.abordaje_inicio'          => 'nullable|date_format:H:i',
+            'tiempos.abordaje_fin'             => 'nullable|date_format:H:i',
+            'tiempos.cierre_puerta'            => 'nullable|date_format:H:i',
 
-            DB::transaction(function () use ($request, $data) {
+            // DEMORAS
+            'demoras.motivo'    => 'nullable|string|max:200',
+            'demoras.minutos'   => 'nullable|integer|min:0',
+            'demoras.agente_id' => 'nullable|integer',
+        ]);
 
-                $vuelo = vuelo::lockForUpdate()->findOrFail($data['vuelo_id']);
+        DB::transaction(function () use ($request, $data) {
+            $vuelo = \App\Models\vuelo::lockForUpdate()->findOrFail($data['vuelo_id']);
 
-                // Operador: crear o reutilizar y vincular
-                $codigo = data_get($data, 'operador.codigo');
-                $nombre = data_get($data, 'operador.nombre');
-
-                $operador = Operador::firstOrCreate(
-                    ['codigo' => $codigo],
-                    ['nombre' => $nombre]
+            // Guardar/actualizar TIEMPOS (1:1)
+            $t = $request->input('tiempos', []);
+            if (!empty(array_filter($t, fn($v) => $v !== null && $v !== ''))) {
+                \App\Models\TiemposOperativos::updateOrCreate(
+                    ['vuelo_id' => $vuelo->id],
+                    [
+                        'desabordaje_inicio'       => $t['desabordaje_inicio']       ?? null,
+                        'desabordaje_fin'          => $t['desabordaje_fin']          ?? null,
+                        'inspeccion_cabina_inicio' => $t['inspeccion_cabina_inicio'] ?? null,
+                        'inspeccion_cabina_fin'    => $t['inspeccion_cabina_fin']    ?? null,
+                        'aseo_ingreso'             => $t['aseo_ingreso']             ?? null,
+                        'aseo_salida'              => $t['aseo_salida']              ?? null,
+                        'tripulacion_ingreso'      => $t['tripulacion_ingreso']      ?? null,
+                        'abordaje_inicio'          => $t['abordaje_inicio']          ?? null,
+                        'abordaje_fin'             => $t['abordaje_fin']             ?? null,
+                        'cierre_puerta'            => $t['cierre_puerta']            ?? null,
+                    ]
                 );
+            }
 
-                if ($vuelo->operador_id !== $operador->id) {
-                    $vuelo->operador_id = $operador->id;
-                    $vuelo->save();
-                }
+            // Guardar DEMORA (solo si hay datos)
+            $d = $request->input('demoras', []);
+            if (!empty($d['motivo']) || ($d['minutos'] ?? null) !== null) {
+                \App\Models\demoras::create([
+                    'vuelo_id'  => $vuelo->id,
+                    'motivo'    => $d['motivo']    ?? null,
+                    'minutos'   => (int)($d['minutos'] ?? 0),
+                    'agente_id' => $d['agente_id'] ?? null,
+                ]);
+            }
+        });
 
-                // Tiempos 1:1
-                $t = $request->input('tiempos', []);
-                if (!empty(array_filter($t, fn($v) => $v !== null && $v !== ''))) {
-                    TiemposOperativos::updateOrCreate(
-                        ['vuelo_id' => $vuelo->id],
-                        [
-                            'desabordaje_inicio'       => $t['desabordaje_inicio']       ?? null,
-                            'desabordaje_fin'          => $t['desabordaje_fin']          ?? null,
-                            'inspeccion_cabina_inicio' => $t['inspeccion_cabina_inicio'] ?? null,
-                            'inspeccion_cabina_fin'    => $t['inspeccion_cabina_fin']    ?? null,
-                            'aseo_ingreso'             => $t['aseo_ingreso']             ?? null,
-                            'aseo_salida'              => $t['aseo_salida']              ?? null,
-                            'tripulacion_ingreso'      => $t['tripulacion_ingreso']      ?? null,
-                            'abordaje_inicio'          => $t['abordaje_inicio']          ?? null,
-                            'abordaje_fin'             => $t['abordaje_fin']             ?? null,
-                            'cierre_puerta'            => $t['cierre_puerta']            ?? null,
-                        ]
-                    );
-                }
+        return redirect()
+            ->route('admin.controlaeronave.index', ['open' => $data['vuelo_id']])
+            ->with('success', 'Tiempos y demora registrados para el vuelo.');
+    }
 
-                // Demora (una por ahora)
-                $d = $request->input('demoras', []);
-                if (!empty($d['motivo']) || ($d['minutos'] ?? null) !== null) {
-                    demoras::create([
-                        'vuelo_id'  => $vuelo->id,
-                        'motivo'    => $d['motivo']    ?? null,
-                        'minutos'   => (int)($d['minutos'] ?? 0),
-                        'agente_id' => $d['agente_id'] ?? null,
-                    ]);
-                }
-            });
 
-            return redirect()
-                ->route('admin.controlaeronave.index')
-                ->with('success', 'Operador, tiempos y demora registrados para el vuelo.');
-        }
 }

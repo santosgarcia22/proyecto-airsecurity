@@ -228,11 +228,18 @@ Route::delete('/admin/controlaeronave/accesos/{acceso}', [ControlAeronaveControl
 
 
 // LISTA (usa tu index.blade.php)
-Route::get('/admin/controlaeronave',            [ControlAeronaveController::class, 'index'])->name('admin.controlaeronave.index');
+Route::get('/admin/controlaeronave',            [ControlAeronaveController::class, 'index'])->name('admin.controlaeronave.index');//no tocar funciona
 
 // CREATE (usa tu create.blade.php)
-Route::get('/admin/controlaeronave/create',     [ControlAeronaveController::class, 'create'])->name('admin.controlaeronave.create');
-Route::post('/admin/controlaeronave',           [ControlAeronaveController::class, 'store'])->name('admin.controlaeronave.store');
+//Route::get('/admin/controlaeronave/create',     [ControlAeronaveController::class, 'create'])->name('admin.controlaeronave.create');// quitar
+
+Route::get('/admin/controlaeronave/create', [ControlAeronaveController::class, 'create1'])
+    ->name('admin.controlaeronave.create');
+Route::post('/admin/controlaeronave', [ControlAeronaveController::class, 'store1'])
+    ->name('admin.controlaeronave.store');
+
+
+    
 
 // EDIT / UPDATE / DESTROY (cuando los habilites)
 Route::get('/admin/controlaeronave/{vuelo}/edit',  [ControlAeronaveController::class, 'edit'])->name('admin.controlaeronave.edit');

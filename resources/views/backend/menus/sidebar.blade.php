@@ -144,7 +144,7 @@
                 @can('sidebar.roles.y.permisos')
                 <!-- <li class="nav-item">
                     <a href="#" class="nav-link nav-">
-                        <i class="fas fa-plane-departure"></i> <!-- icono sólido de avión 
+                        <i class="fas fa-plane-departure"></i>  icono sólido de avión 
                         <p>
                             Vuelos
                             <i class="fas fa-angle-left right"></i>
@@ -266,13 +266,13 @@
                                 <p>Usuario App</p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <a href="{{ route('reportes.panel') }}" target="frameprincipal" class="nav-link"
                                 onclick="guardarUltimaVista(event, this.href)">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Reportes</p>
                             </a>
-                        </li>
+                        </li> -->
                     </ul>
                 </li>
                 @endcan
