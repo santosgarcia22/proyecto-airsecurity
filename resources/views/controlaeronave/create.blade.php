@@ -203,6 +203,7 @@ table {
 
                         <div class="d-flex justify-content-between mt-3">
                             <small class="text-muted">Revisa cada pestaña antes de guardar.</small>
+                              <a class="btn btn-secondary" href="{{ route('admin.controlaeronave.index') }}">Cancelar</a>
                             <button type="button" class="btn btn-outline-secondary" id="btnPrev">Anterior</button>
                             <div>
                                 <button type="button" class="btn btn-primary" id="btnNext">Siguiente</button>

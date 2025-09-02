@@ -558,7 +558,7 @@ body.loaded #preloader {
                                                         <div class="v">{{ $it->abordaje_fin ?? '—' }}</div>
                                                     </div>
                                                     <div class="kv"><small>Cierre puertas</small>
-                                                        <div class="v">{{ $it->cierre_puertas ?? '—' }}</div>
+                                                        <div class="v">{{ $it->cierre_puerta ?? '—' }}</div>
                                                     </div>
                                                 </div>
                                             </div>

@@ -98,3 +98,5 @@ $v = $mode=='edit' ? $vuelo : null;
     <ul class="mb-0">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
 </div>
 @endif
+
+

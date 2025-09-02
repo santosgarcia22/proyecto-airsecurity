@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Vuelo;
+use App\Models\vuelo;
 use App\Models\Operador;
 use App\Models\Persona;
 use Illuminate\Http\Request;
@@ -22,7 +22,7 @@ public function __construct()
         $fi = $request->input('fecha_inicio');
         $ff = $request->input('fecha_fin');
 
-        $vuelos = Vuelo::with(['operador'])
+        $vuelos = vuelo::with(['operador'])
             ->when($fi, fn($q2)=>$q2->whereDate('fecha', '>=', $fi))
             ->when($ff, fn($q2)=>$q2->whereDate('fecha', '<=', $ff))
             ->when($q, function($query) use ($q) {
@@ -75,7 +75,7 @@ public function __construct()
             // 'lider_vuelo_id' => ['nullable', Rule::exists('personas','id')],
         ]);
 
-        $vuelo = Vuelo::create($data);
+        $vuelo = vuelo::create($data);
 
        return redirect()->route('admin.vuelo.index')->with('success','Vuelo creado.');
 
@@ -88,7 +88,7 @@ public function __construct()
         return view('vuelos.show', compact('vuelo'));
     }
 
-    public function edit(Vuelo $vuelo)
+    public function edit(vuelo $vuelo)
     {
         $operadores  = Operador::orderBy('nombre')->get();
       
@@ -96,7 +96,7 @@ public function __construct()
         return view('vuelos.edit', compact('vuelo','operadores'));
     }
 
-    public function update(Request $request, Vuelo $vuelo)
+    public function update(Request $request, vuelo $vuelo)
     {
         $data = $request->validate([
             'fecha' => ['required','date'],
@@ -120,10 +120,10 @@ public function __construct()
         return redirect()->route('admin.vuelo.show', $vuelo)->with('success','Vuelo actualizado.');
     }
 
-    public function destroy(Vuelo $vuelo)
+    public function destroy(vuelo $vuelo)
     {
-        $vuelo->delete();
-        return redirect()->route('admin.vuelo.index')->with('success','Vuelo eliminado.');
+        vuelo::destroy($id);
+            return response()->json(['res' => true]);
     }
 
 

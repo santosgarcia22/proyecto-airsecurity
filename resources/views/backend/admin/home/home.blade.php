@@ -122,7 +122,7 @@
                 </ul>
             </div>
             <div>
-                <a href="{{ route('admin.accesos.index') }}" class="btn btn-primary mb-2 w-100 rounded-pill shadow-sm">
+                <a href="{{ route('admin.controlaeronave.index') }}" class="btn btn-primary mb-2 w-100 rounded-pill shadow-sm">
                     <i class="fas fa-id-badge"></i> Ver todos los accesos
                 </a>
                 <a href="{{ route('admin.vuelo.index') }}" class="btn btn-outline-primary w-100 rounded-pill shadow-sm">

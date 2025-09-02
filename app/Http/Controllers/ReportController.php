@@ -3,14 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\acceso;
 use App\Models\tipo;
-use App\Models\vuelo;
 use App\Models\ControlAero;
 use App\Exports\AccesosExport;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Models\vuelo;               // NUEVO: fuente principal
+use App\Models\TiemposOperativos;   // tiempos
+use App\Models\demoras;             // demoras
+use App\Models\Accesos;    
+
+
 
 class ReportController extends Controller
 {
@@ -243,72 +249,162 @@ class ReportController extends Controller
     }
 
 
- // LISTADO + FILTROS (agrupando por vuelo para no repetir)
-    public function controlAeronaveIndex(Request $request)
+/* =======================================================
+     * LISTADO + FILTROS (una fila por vuelo)
+     * ======================================================= */
+  public function controlAeronaveIndex(Request $request)
     {
-        $q = controlAero::query();
+        $q = vuelo::query()
+            ->leftJoin('tiempos_operativos as t', 't.vuelo_id', '=', 'vuelos.id')
+            ->leftJoin('demoras as d', 'd.vuelo_id', '=', 'vuelos.id');
 
+        // Filtros
         if ($request->filled('fecha_inicio') && $request->filled('fecha_fin')) {
-            $q->whereBetween('fecha', [
-                $request->input('fecha_inicio').' 00:00:00',
-                $request->input('fecha_fin').' 23:59:59',
+            $q->whereBetween('vuelos.fecha', [
+                $request->input('fecha_inicio'),
+                $request->input('fecha_fin'),
             ]);
         }
 
         if ($request->filled('q')) {
             $term = $request->input('q');
-            $q->where(function ($qq) use ($term) {
-                $qq->where('numero_vuelo', 'like', "%{$term}%")
-                   ->orWhere('origen', 'like', "%{$term}%")
-                   ->orWhere('destino', 'like', "%{$term}%")
-                   ->orWhere('matricula_operador', 'like', "%{$term}%")
-                   ->orWhere('coordinador_lider', 'like', "%{$term}%")
-                   ->orWhere('agente_nombre', 'like', "%{$term}%")
-                   // buscar también por persona:
-                   ->orWhere('nombre', 'like', "%{$term}%")
-                   ->orWhere('empresa', 'like', "%{$term}%")
-                   ->orWhere('motivo', 'like', "%{$term}%");
+            $q->where(function ($w) use ($term) {
+                $w->where('vuelos.numero_vuelo_llegando', 'like', "%{$term}%")
+                  ->orWhere('vuelos.numero_vuelo_saliendo', 'like', "%{$term}%")
+                  ->orWhere('vuelos.origen', 'like', "%{$term}%")
+                  ->orWhere('vuelos.destino', 'like', "%{$term}%")
+                  ->orWhere('vuelos.matricula', 'like', "%{$term}%")
+                  // también buscar por campos de accesos
+                  ->orWhereExists(function($s) use ($term) {
+                      $s->selectRaw(1)
+                        ->from('accesos')
+                        ->whereColumn('accesos.vuelo_id', 'vuelos.id')
+                        ->where(function($z) use ($term){
+                            $z->where('accesos.nombre', 'like', "%{$term}%")
+                              ->orWhere('accesos.empresa', 'like', "%{$term}%")
+                              ->orWhere('accesos.motivo_entrada', 'like', "%{$term}%");
+                        });
+                  });
             });
         }
 
-        // Agrupamos para listar “un vuelo” por fila en pantalla
+        // Selección (alias para que tu blade no cambie mucho)
         $data = $q->select([
-                'fecha','numero_vuelo','origen','destino',
-                'matricula_operador','coordinador_lider',
+                'vuelos.id',
+                'vuelos.fecha',
+                \DB::raw("COALESCE(vuelos.numero_vuelo_llegando, vuelos.numero_vuelo_saliendo) as numero_vuelo"),
+                'vuelos.origen',
+                'vuelos.destino',
+                'vuelos.matricula as matricula_operador',
+                // coordinador_lider ya no existe en el nuevo esquema (si lo necesitas, añade la relación/persona)
+                \DB::raw("'' as coordinador_lider"),
             ])
-            ->groupBy('fecha','numero_vuelo','origen','destino','matricula_operador','coordinador_lider')
-            ->orderByDesc('fecha')
+            ->groupBy('vuelos.id','vuelos.fecha','vuelos.numero_vuelo_llegando','vuelos.numero_vuelo_saliendo','vuelos.origen','vuelos.destino','vuelos.matricula')
+            ->orderByDesc('vuelos.fecha')
+            ->orderByDesc('vuelos.id')
             ->paginate(10);
 
         return view('reportes.control_aeronave.index', compact('data'));
     }
 
-    // PDF: toma el id, busca su vuelo y trae TODAS las filas de ese vuelo en esa fecha
-    public function controlAeronavePdf($id)
+
+   /* =======================================================
+     * PDF POR VUELO
+     * Recibe el ID de vuelo y arma el header + filas de accesos
+     * ======================================================= */
+   public function controlAeronavePdf($vueloId)
     {
-        $base = controlAero::findOrFail($id);
+        $vuelo = vuelo::with(['tiempos', 'demoras', 'accesos'])->findOrFail($vueloId);
 
-        $fecha = Carbon::parse($base->fecha)->toDateString();
+        // HEADER esperado por tu vista PDF (mismos nombres que usas en la Blade)
+        $header = (object) [
+            'fecha'               => optional($vuelo->fecha)->format('Y-m-d') ?? $vuelo->fecha,
+            'origen'              => $vuelo->origen,
+            'destino'             => $vuelo->destino,
+            'numero_vuelo'        => $vuelo->numero_vuelo_llegando ?? $vuelo->numero_vuelo_saliendo,
+            'total_pax'           => $vuelo->total_pax,
+            'hora_llegada'        => $this->hhmm($vuelo->hora_llegada_real),
+            'posicion_llegada'    => $vuelo->posicion_llegada,
+            'matricula_operador'  => $vuelo->matricula,              // en el nuevo esquema está en vuelos.matricula
+            'hora_real_salida'    => $this->hhmm($vuelo->hora_salida_pushback),
+            'salida_itinerario'   => $this->hhmm($vuelo->hora_salida_itinerario),
 
-        $rows = controlAero::whereDate('fecha', $fecha)
-                ->where('numero_vuelo', $base->numero_vuelo)
-                ->orderBy('hora_entrada')
-                ->get();
+            // tiempos (si existen)
+            'desabordaje_inicio'       => optional($vuelo->tiempos)->desabordaje_inicio,
+            'desabordaje_fin'          => optional($vuelo->tiempos)->desabordaje_fin,
+            'inspeccion_cabina_inicio' => optional($vuelo->tiempos)->inspeccion_cabina_inicio,
+            'inspeccion_cabina_fin'    => optional($vuelo->tiempos)->inspeccion_cabina_fin,
+            'aseo_ingreso'             => optional($vuelo->tiempos)->aseo_ingreso,
+            'aseo_salida'              => optional($vuelo->tiempos)->aseo_salida,
+            'tripulacion_ingreso'      => optional($vuelo->tiempos)->tripulacion_ingreso,
+            'abordaje_inicio'          => optional($vuelo->tiempos)->abordaje_inicio,
+            'abordaje_fin'             => optional($vuelo->tiempos)->abordaje_fin,
+            'cierre_puertas'           => optional($vuelo->tiempos)->cierre_puerta,
 
-        $header = $rows->first() ?? $base; // para la cabecera
-        $maxRows = 32; // filas de la planilla
+            // demoras: tomamos la última (o suma si prefieres)
+            'demora_tiempo'            => optional($vuelo->demoras->last())->minutos,
+            'demora_motivo'            => optional($vuelo->demoras->last())->motivo,
+
+            // seguridad (si en tu nuevo diseño no existen, van nulos)
+            'agente_nombre'            => null,
+            'agente_id'                => null,
+            'agente_firma'             => null,
+            'coordinador_lider'        => null,
+        ];
+
+        // Filas de personas (accesos) adaptadas al PDF
+        $rows = $vuelo->accesos
+            ->sortBy('id') // o por hora_entrada si prefieres
+            ->values()
+            ->map(function($r){
+                return (object)[
+                    'nombre'         => $r->nombre,
+                    'id'             => $r->identificacion,
+                    'hora_entrada'   => $r->hora_entrada,
+                    'hora_salida'    => $r->hora_salida,
+                    'hora_entrada1'  => $r->hora_entrada1,
+                    'hora_salida1'   => $r->hora_salida1,
+                    'herramientas'   => $r->herramientas,
+                    'empresa'        => $r->empresa,
+                    'motivo'         => $r->motivo_entrada,
+                    'firma_b64'      => $this->img64($r->firma_path),
+                ];
+            });
+
+        $maxRows = 32;
 
         $pdf = Pdf::loadView('reportes.control_aeronave.pdf', [
-                    'header'  => $header,   // datos del vuelo
-                    'rows'    => $rows,     // personas
+                    'header'  => $header,
+                    'rows'    => $rows,
                     'maxRows' => $maxRows,
                 ])->setPaper('letter', 'portrait');
 
+        $fecha = $header->fecha ?: Carbon::now()->toDateString();
         return $pdf->stream("control_acceso_aeronave_{$header->numero_vuelo}_{$fecha}.pdf");
     }
 
 
+        /* =================== helpers =================== */
 
+            // Convierte datetimes a HH:MM (acepta null)
+            private function hhmm($v)
+            {
+                if (!$v) return null;
+                try {
+                    return Carbon::parse($v)->format('H:i');
+                } catch (\Throwable $e) { return null; }
+            }
+
+            // Firma a base64 para dompdf
+            private function img64(?string $pathRel)
+            {
+                if (!$pathRel) return null;
+                $abs = Storage::disk('public')->path($pathRel);
+                if (!is_file($abs)) return null;
+                $mime = mime_content_type($abs) ?: 'image/png';
+                $data = base64_encode(file_get_contents($abs));
+                return "data:{$mime};base64,{$data}";
+    }
     
     public function pdf($id)
         {

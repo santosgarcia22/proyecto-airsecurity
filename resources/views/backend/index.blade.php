@@ -61,6 +61,9 @@
         const iframe = document.getElementById('frameprincipal');
         const preloader = document.getElementById('global-preloader');
 
+        // 🔹 Generar clave única por usuario (ej: user_5 o admin_1)
+        const userKey = "lastIframeUrl_" + "{{ Auth::user()->id }}";
+
         function hidePreloader() {
             preloader.style.opacity = "0";
             preloader.style.visibility = "hidden";
@@ -73,38 +76,38 @@
             preloader.style.visibility = "visible";
         }
 
-        // 🔹 Recuperar última URL al recargar
-        const lastUrl = localStorage.getItem("lastIframeUrl");
+        // 🔹 Recuperar última URL de este usuario
+        const lastUrl = localStorage.getItem(userKey);
         if (lastUrl) {
             iframe.src = lastUrl;
         } else {
-            // Si no hay nada guardado, cargar un dashboard por defecto
-            iframe.src = "/admin/dashboard";
+            iframe.src = "/admin/home"; // o la ruta inicial según rol
         }
 
-        // 🔹 Guardar URL cada vez que el iframe cambia
+        // 🔹 Guardar URL al cargar iframe
         iframe.addEventListener("load", () => {
             hidePreloader();
             try {
-                localStorage.setItem("lastIframeUrl", iframe.contentWindow.location.href);
+                localStorage.setItem(userKey, iframe.contentWindow.location.href);
             } catch (e) {
                 console.warn("No se pudo guardar la URL del iframe:", e);
             }
         });
 
-        // 🔹 Detectar clicks en el menú
+        // 🔹 Guardar URL al dar clic en el menú
         document.querySelectorAll('.nav-link[target="frameprincipal"]').forEach(link => {
-            link.addEventListener("click", (e) => {
+            link.addEventListener("click", () => {
                 const url = link.getAttribute("href");
                 if (url) {
-                    localStorage.setItem("lastIframeUrl", url);
+                    localStorage.setItem(userKey, url);
                 }
                 showPreloader();
-                setTimeout(hidePreloader, 5000); // seguridad
+                setTimeout(hidePreloader, 5000);
             });
         });
     });
     </script>
+
 
 
 </body>

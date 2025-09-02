@@ -25,12 +25,14 @@
                 <td class="text-center">
                     <a class="btn btn-xs btn-info" href="{{ route('admin.vuelo.show',$v) }}">Ver</a>
                     <a class="btn btn-xs btn-warning" href="{{ route('admin.vuelo.edit',$v) }}">Editar</a>
-                    <form action="{{ route('admin.vuelo.destroy',$v) }}" method="POST" class="d-inline"
-                        onsubmit="return confirm('¿Eliminar vuelo?')">
-                        @csrf @method('DELETE')
-                        <button class="btn btn-xs btn-danger">Eliminar</button>
-                    </form>
+                 
+                    <button class="btn btn-danger btn-sm btn-eliminar"
+                        data-url="{{ route('admin.vuelo.destroy', $v->id) }}"
+                        data-token="{{ csrf_token() }}" title="Eliminar">
+                        <i class="bi bi-trash"></i> <span class="btn-text">Eliminar</span>
+                    </button>
                 </td>
+
             </tr>
             @empty
             <tr>
@@ -44,3 +46,19 @@
 <div class="mt-2">
     {{ $vuelos->links() }}
 </div>
+
+
+
+{{-- Scripts --}}
+@yield('scripts')
+
+
+<script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
+<script src="{{ asset('js/delete.js') }}"></script>
+
+@section('archivos-js')
+<script src="{{ asset('js/axios.min.js') }}"></script>
+<script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
+<script src="{{ asset('js/toastr.min.js') }}"></script>
+
+< @endsection
