@@ -69,10 +69,34 @@ table {
 
                 <form action="{{ route('admin.controlaeronave.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                   <input type="hidden" name="vuelo_id" value="{{ old('vuelo_id', optional($vuelo)->id) }}">
+
+
 
                     <div class="card-body">
                         <div class="row g-3">
+
+                            {{-- Dentro del <form> ... --}}
+
+                            @if(optional($vuelo)->id)
+                            {{-- Si llegaste con ?vuelo_id=xxx, mandamos ese id fijo --}}
+                            <input type="hidden" name="vuelo_id" value="{{ $vuelo->id }}">
+                            @else
+                            {{-- Si no, muestra un select (y SOLO el select) --}}
+                            <div class="mb-3">
+                                <label class="form-label">Selecciona vuelo</label>
+                                <select name="vuelo_id" class="form-control" required>
+                                    <option value="" selected disabled>-- Selecciona --</option>
+                                    @foreach(\App\Models\vuelo::orderByDesc('id')->limit(50)->get() as $v)
+                                    <option value="{{ $v->id }}" {{ old('vuelo_id') == $v->id ? 'selected' : '' }}>
+                                        {{ $v->fecha }} —
+                                        {{ $v->numero_vuelo_llegando ?? $v->numero_vuelo_saliendo ?? 'N/A' }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @endif
+
+
                             <!-- Tabs -->
                             <div class="col-lg-3">
                                 <div class="nav flex-lg-column nav-pills gap-2" role="tablist">
@@ -82,8 +106,8 @@ table {
 
                                     <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-demoras"
                                         type="button">2. Demoras y pax </button>
-                                    <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-seg"
-                                        type="button">3. Operadores </button>
+                                    <!-- <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-seg"
+                                        type="button">3. Operadores </button> -->
                                     <!-- <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-acce"
                                         type="button">5. Datos de accesos Y QUITAR TAMBIEN YA ESTA EN EL MODAL</button> -->
                                 </div>
@@ -94,7 +118,7 @@ table {
                                 <div class="tab-content">
 
                                     {{-- 1 TIEMPOS OPERATIVOS --}}
-                                    <div id="tab-procesos" class="tab-pane fade show active" data-tab>
+                                    <div id="tab-procesos" class="tab-pane fade show active">
                                         <div class="table-responsive">
                                             <table class="table table-sm align-middle">
                                                 <thead class="table-light">
@@ -151,7 +175,7 @@ table {
                                     </div>
 
                                     {{-- 2 DEMORAS --}}
-                                    <div id="tab-demoras" class="tab-pane fade" data-tab>
+                                    <div id="tab-demoras" class="tab-pane fade">
                                         <div class="row g-3">
                                             <div class="col-sm-3">
                                                 <label class="form-label">Tiempo (min)</label>
@@ -166,30 +190,12 @@ table {
 
                                             <div class="col-sm-4">
                                                 <label class="form-label">Agente ID</label>
-                                                <input type="text" name="demoras[agente_id]" min="1" step="1"
+                                                <input type="number" name="demoras[agente_id]" min="1" step="1"
                                                     class="form-control" required>
                                             </div>
 
                                         </div>
                                     </div>
-
-                                    {{-- 3 OPERADORES --}}
-                                    <div id="tab-seg" class="tab-pane fade" data-tab>
-                                        <div class="row g-3">
-                                            <div class="col-md-6">
-                                                <label class="form-label">Codigo</label>
-                                                <input type="text" name="operador[codigo]" class="form-control"
-                                                    required>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="form-label">Nombre</label>
-                                                <input type="text" name="operador[nombre]" class="form-control"
-                                                    required>
-                                            </div>
-
-                                        </div>
-                                    </div>
-
 
                                 </div><!-- /content -->
                             </div>
@@ -197,6 +203,7 @@ table {
 
                         <div class="d-flex justify-content-between mt-3">
                             <small class="text-muted">Revisa cada pestaña antes de guardar.</small>
+                              <a class="btn btn-secondary" href="{{ route('admin.controlaeronave.index') }}">Cancelar</a>
                             <button type="button" class="btn btn-outline-secondary" id="btnPrev">Anterior</button>
                             <div>
                                 <button type="button" class="btn btn-primary" id="btnNext">Siguiente</button>
@@ -215,49 +222,44 @@ table {
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
+        const navButtons = Array.from(document.querySelectorAll('[data-bs-toggle="pill"]'));
+        const panes = Array.from(document.querySelectorAll('.tab-pane'));
         const btnPrev = document.getElementById('btnPrev');
-        const btnNext = document.getElementById('btnNext');
         const btnSave = document.getElementById('btnSave');
-
-        const tabButtons = Array.from(document.querySelectorAll('[data-bs-toggle="pill"]'));
         let i = 0;
 
-        function updateButtons(idx) {
-            btnPrev.disabled = (idx === 0);
-            btnNext.classList.toggle('d-none', idx === tabButtons.length - 1);
-            btnSave.classList.toggle('d-none', idx !== tabButtons.length - 1);
-        }
-
-        function activate(idx) {
-            const tab = bootstrap.Tab.getOrCreateInstance(tabButtons[idx]);
-            tab.show();
-            updateButtons(idx);
-        }
-
-        // cuando el usuario hace clic en la nav izquierda, sincronizamos i
-        tabButtons.forEach((btn, idx) => {
-            btn.addEventListener('shown.bs.tab', () => {
-                i = idx;
-                updateButtons(i);
+        function show(idx) {
+            navButtons.forEach((b, k) => {
+                b.classList.toggle('active', k === idx);
+                b.setAttribute('aria-selected', k === idx ? 'true' : 'false');
             });
-        });
+            panes.forEach((p, k) => {
+                p.classList.toggle('show', k === idx);
+                p.classList.toggle('active', k === idx);
+            });
+            btnPrev.disabled = (idx === 0);
+            btnNext.classList.toggle('d-none', idx === navButtons.length - 1);
+            btnSave.classList.toggle('d-none', idx !== navButtons.length - 1);
+        }
 
+        navButtons.forEach((b, idx) => b.addEventListener('click', e => {
+            e.preventDefault();
+            i = idx;
+            show(i);
+        }));
         btnNext.addEventListener('click', () => {
-            if (i < tabButtons.length - 1) {
+            if (i < navButtons.length - 1) {
                 i++;
-                activate(i);
+                show(i);
             }
         });
-
         btnPrev.addEventListener('click', () => {
             if (i > 0) {
                 i--;
-                activate(i);
+                show(i);
             }
         });
-
-        // estado inicial
-        activate(0);
+        show(0);
     });
     </script>
 

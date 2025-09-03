@@ -112,7 +112,7 @@
 
                         <!-- Nuevo Acceso (opcional, muévelo a la derecha) -->
                         <a href="{{ route('admin.tipo.create') }}" class="btn btn-outline-primary btn-sm ms-auto">
-                            <i class="bi bi-pencil-square"></i> Nuevo Acceso
+                            <i class="bi bi-pencil-square"></i> Nuevo Tipo
                         </a>
                     </div>
 

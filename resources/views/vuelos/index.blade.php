@@ -37,23 +37,15 @@
 </style>
 @endsection
 
+
 <div class="card">
     <div class="card-header-custom">
         <h5 class="mb-0">Lista de Vuelos</h5>
-
     </div>
 
     <div class="card-body">
-        <form class="row mb-3" method="GET" action="{{ route('admin.vuelo.index') }}">
-            <!-- <div class="col-md-2">
-                <label>Mostrar</label>
-                <select name="limit" class="form-control">
-                    <option value="5" {{ request('limit') == 5 ? 'selected' : '' }}>5</option>
-                    <option value="10" {{ request('limit') == 10 ? 'selected' : '' }}>10</option>
-                    <option value="25" {{ request('limit') == 25 ? 'selected' : '' }}>25</option>
-                </select>
-            </div> -->
-
+        <!-- 🔹 quitamos el action para usar AJAX -->
+        <form id="formFiltros" class="row mb-3">
             <div class="col-md-2">
                 <label>Desde</label>
                 <input type="date" name="fecha_inicio" class="form-control" value="{{ request('fecha_inicio') }}">
@@ -68,7 +60,7 @@
                 <label>Buscar</label>
                 <div class="input-group">
                     <input type="text" name="q" class="form-control" placeholder="Buscar..." value="{{ request('q') }}">
-                    <button class="btn btn-primary">Buscar</button>
+                    <button type="submit" class="btn btn-primary">Buscar</button>
                 </div>
             </div>
 
@@ -79,60 +71,15 @@
                     Administrar Operadores
                 </button>
             </div>
-
         </form>
 
-
-
-
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped align-middle">
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>N° Llegando</th>
-                        <th>N° Saliendo</th>
-                        <th>Origen</th>
-                        <th>Destino</th>
-                        <th>Matrícula</th>
-                        <th>Operador</th>
-                        <th style="width:130px">Opciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($vuelos as $v)
-                    <tr>
-                        <td>{{ optional($v->fecha)->format('Y-m-d') }}</td>
-                        <td>{{ $v->numero_vuelo_llegando }}</td>
-                        <td>{{ $v->numero_vuelo_saliendo }}</td>
-                        <td>{{ $v->origen }}</td>
-                        <td>{{ $v->destino }}</td>
-                        <td>{{ $v->matricula }}</td>
-                        <td>{{ optional($v->operador)->nombre }}</td>
-                        <td class="text-center">
-                            <a class="btn btn-xs btn-info" href="{{ route('admin.vuelo.show',$v) }}">Ver</a>
-                            <a class="btn btn-xs btn-warning" href="{{ route('admin.vuelo.edit',$v) }}">Editar</a>
-                            <form action="{{ route('admin.vuelo.destroy',$v) }}" method="POST" class="d-inline"
-                                onsubmit="return confirm('¿Eliminar vuelo?')">
-                                @csrf @method('DELETE')
-                                <button class="btn btn-xs btn-danger">Eliminar</button>
-                            </form>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="8" class="text-center">No se encontraron registros</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-
-        <div class="mt-2">
-            {{ $vuelos->links() }}
+        <!-- 🔹 este div lo vamos a reemplazar dinámicamente -->
+        <div id="tablaVuelos">
+            @include('vuelos.partials.tabla', ['vuelos' => $vuelos])
         </div>
     </div>
 </div>
+
 <!-- Botón para abrir modal -->
 
 
@@ -202,6 +149,29 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
 <script src="{{ asset('js/delete.js') }}"></script>
+
+<script>
+$(function() {
+    // ✅ Enviar filtros por AJAX
+    $('#formFiltros').on('submit', function(e) {
+        e.preventDefault();
+        let datos = $(this).serialize();
+
+        $.get("{{ route('admin.vuelo.index') }}", datos, function(data) {
+            $('#tablaVuelos').html($(data).find('#tablaVuelos').html());
+        });
+    });
+
+    // ✅ Paginación AJAX
+    $(document).on('click', '#tablaVuelos .pagination a', function(e) {
+        e.preventDefault();
+        let url = $(this).attr('href');
+        $.get(url, function(data) {
+            $('#tablaVuelos').html($(data).find('#tablaVuelos').html());
+        });
+    });
+});
+</script>
 
 
 <script>

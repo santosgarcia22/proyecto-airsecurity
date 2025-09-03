@@ -1,18 +1,9 @@
-
-
-<h3>Hola, estoy cargando la tabla</h3>
-
-
 @php dd($usuarios); @endphp
 
 <div class="table-responsive">
 ...
 
 <div class="table-responsive">
-
-
-
-<h3>Hola, estoy cargando la tabla</h3>
 
     <table class="table table-bordered">
     <thead>
