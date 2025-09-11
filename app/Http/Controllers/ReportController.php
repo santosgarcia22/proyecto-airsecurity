@@ -15,7 +15,7 @@ use App\Models\vuelo;               // NUEVO: fuente principal
 use App\Models\TiemposOperativos;   // tiempos
 use App\Models\demoras;             // demoras
 use App\Models\Accesos;    
-
+use App\Models\Personas;
 
 
 class ReportController extends Controller
@@ -340,6 +340,9 @@ class ReportController extends Controller
             'abordaje_inicio'          => optional($vuelo->tiempos)->abordaje_inicio,
             'abordaje_fin'             => optional($vuelo->tiempos)->abordaje_fin,
             'cierre_puertas'           => optional($vuelo->tiempos)->cierre_puerta,
+            'coordinador_nombre'       => optional($vuelo->coordinador)->nombre,
+            'lider_nombre'             => optional($vuelo->liderVuelo)->nombre,
+
 
             // demoras: tomamos la última (o suma si prefieres)
             'demora_tiempo'            => optional($vuelo->demoras->last())->minutos,

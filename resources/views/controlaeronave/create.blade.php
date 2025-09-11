@@ -70,8 +70,6 @@ table {
                 <form action="{{ route('admin.controlaeronave.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
-
-
                     <div class="card-body">
                         <div class="row g-3">
 
@@ -95,7 +93,6 @@ table {
                                 </select>
                             </div>
                             @endif
-
 
                             <!-- Tabs -->
                             <div class="col-lg-3">

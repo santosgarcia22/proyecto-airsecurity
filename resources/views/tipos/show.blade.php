@@ -123,6 +123,9 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Nombre</th>
+                                    <th>identificacion</th>
+                                    <th>Empresa</th>
+                                    <th>Rol</th>
                                     <th>Opciones</th>
                                 </tr>
                             </thead>

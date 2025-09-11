@@ -10,15 +10,15 @@
     background: #fff;
     border-top: 1px solid #e9ecef;
     padding: .75rem;
-    z-index: 10
+    z-index: 10;
 }
 
 .nav-pills .nav-link {
-    border-radius: .5rem
+    border-radius: .5rem;
 }
 
 .tab-pane {
-    padding-top: .5rem
+    padding-top: 1rem;
 }
 </style>
 @endsection
@@ -33,39 +33,27 @@
                     <h4 class="mb-0">Control acceso aeronave - Editar</h4>
                 </div>
 
-                <form action="{{ route('admin.controlaeronave.update', $control->id_control_aeronave) }}" method="POST"
-                    enctype="multipart/form-data">
+                <form
+                    action="{{ route('admin.controlaeronave.update', ['vuelo' => $control->id ?? $control->id_control_aeronave]) }}"
+                    method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
                     <div class="card-body">
-                        <div class="row g-3">
-                            <!-- Tabs -->
-                            <div class="nav flex-lg-column nav-pills gap-2" role="tablist">
-                                <a class="nav-link active" data-toggle="pill" href="#tab-base" role="tab"
-                                    aria-controls="tab-base" aria-selected="true">
-                                    1. Datos base
-                                </a>
-                                <a class="nav-link" data-toggle="pill" href="#tab-procesos" role="tab"
-                                    aria-controls="tab-procesos" aria-selected="false">
-                                    2. Procesos / tiempos
-                                </a>
-                                <a class="nav-link" data-toggle="pill" href="#tab-demoras" role="tab"
-                                    aria-controls="tab-demoras" aria-selected="false">
-                                    3. Demoras y pax
-                                </a>
-                                <a class="nav-link" data-toggle="pill" href="#tab-seg" role="tab"
-                                    aria-controls="tab-seg" aria-selected="false">
-                                    4. Seguridad / adjuntos
-                                </a>
-                                <a class="nav-link" data-toggle="pill" href="#tab-acce" role="tab"
-                                    aria-controls="tab-seg" aria-selected="false">
-                                    5. Datos de Acceso
-                                </a>
+                        <div class="row">
+                            <!-- Columna izquierda (menú) -->
+                            <div class="col-lg-3 mb-3">
+                                <div class="nav flex-lg-column nav-pills gap-2" role="tablist">
+                                    <a class="nav-link active" data-toggle="pill" href="#tab-base">1. Datos base</a>
+                                    <a class="nav-link" data-toggle="pill" href="#tab-procesos">2. Procesos /
+                                        tiempos</a>
+                                    <a class="nav-link" data-toggle="pill" href="#tab-demoras">3. Demoras y pax</a>
+                                    <a class="nav-link" data-toggle="pill" href="#tab-seg">4. Seguridad / adjuntos</a>
+                                    <a class="nav-link" data-toggle="pill" href="#tab-acce">5. Datos de Acceso</a>
+                                </div>
                             </div>
 
-
-                            <!-- Content -->
+                            <!-- Columna derecha (contenido) -->
                             <div class="col-lg-9">
                                 <div class="tab-content">
 
@@ -87,7 +75,6 @@
                                                 <input type="text" name="numero_vuelo" class="form-control"
                                                     value="{{ old('numero_vuelo', $control->numero_vuelo ?? '') }}">
                                             </div>
-
                                             <div class="col-sm-4">
                                                 <label class="form-label">Hora de llegada</label>
                                                 <input type="time" name="hora_llegada" class="form-control"
@@ -98,14 +85,11 @@
                                                 <input type="text" name="posicion_llegada" class="form-control"
                                                     value="{{ old('posicion_llegada', $control->posicion_llegada ?? '') }}">
                                             </div>
-
                                             <div class="col-12">
-                                                <label class="form-label">Matrícula y operador (TAI, LRC, AV GUG,
-                                                    ...)</label>
+                                                <label class="form-label">Matrícula y operador</label>
                                                 <input type="text" name="matricula_operador" class="form-control"
                                                     value="{{ old('matricula_operador', $control->matricula_operador ?? '') }}">
                                             </div>
-
                                             <div class="col-sm-6">
                                                 <label class="form-label">Coordinador / Líder de vuelo</label>
                                                 <input type="text" name="coordinador_lider" class="form-control"
@@ -180,9 +164,8 @@
                                                     </tr>
                                                     <tr>
                                                         <td>Cierre de puertas</td>
-                                                        <td><input type="time" name="cierre_puertas"
-                                                                class="form-control"
-                                                                value="{{ old('cierre_puertas', $control->cierre_puertas ?? '') }}">
+                                                        <td><input type="time" name="cierre_puerta" class="form-control"
+                                                                value="{{ old('cierre_puerta', $control->cierre_puerta ?? '') }}">
                                                         </td>
                                                         <td></td>
                                                     </tr>
@@ -204,7 +187,6 @@
                                                 <input type="text" name="demora_motivo" class="form-control"
                                                     value="{{ old('demora_motivo', $control->demora_motivo ?? '') }}">
                                             </div>
-
                                             <div class="col-sm-4">
                                                 <label class="form-label">Destino</label>
                                                 <input type="text" name="destino" class="form-control"
@@ -227,17 +209,17 @@
                                     <div class="tab-pane fade" id="tab-seg">
                                         <div class="row g-3">
                                             <div class="col-md-6">
-                                                <label class="form-label">Agente/Oficial de seguridad (nombre)</label>
+                                                <label class="form-label">Agente/Oficial de seguridad</label>
                                                 <input type="text" name="agente_nombre" class="form-control"
                                                     value="{{ old('agente_nombre', $control->agente_nombre ?? '') }}">
                                             </div>
                                             <div class="col-md-3">
-                                                <label class="form-label">ID Agente/Oficial</label>
+                                                <label class="form-label">ID Agente</label>
                                                 <input type="text" name="agente_id" class="form-control"
                                                     value="{{ old('agente_id', $control->agente_id ?? '') }}">
                                             </div>
                                             <div class="col-md-3">
-                                                <label class="form-label">Firma Agente/Oficial</label>
+                                                <label class="form-label">Firma</label>
                                                 <input type="file" name="agente_firma" class="form-control"
                                                     accept="image/png,image/jpeg,image/webp,image/heic">
                                                 @if($control->agente_firma)
@@ -248,9 +230,8 @@
                                         </div>
                                     </div>
 
-
                                     {{-- 5 DATOS DE ACCESO --}}
-                                    <div class="tab-pane fade " id="tab-acce">
+                                    <div class="tab-pane fade" id="tab-acce">
                                         <div class="row g-3">
                                             <div class="col-sm-4">
                                                 <label class="form-label">Nombre</label>
@@ -263,24 +244,22 @@
                                                     value="{{ old('id', $control->id ?? '') }}">
                                             </div>
                                             <div class="col-sm-4">
-                                                <label class="form-label">hora_entrada</label>
+                                                <label class="form-label">Hora entrada</label>
                                                 <input type="time" name="hora_entrada" class="form-control"
                                                     value="{{ old('hora_entrada', $control->hora_entrada ?? '') }}">
                                             </div>
-
                                             <div class="col-sm-4">
-                                                <label class="form-label">Hora de salida</label>
+                                                <label class="form-label">Hora salida</label>
                                                 <input type="time" name="hora_salida" class="form-control"
                                                     value="{{ old('hora_salida', $control->hora_salida ?? '') }}">
                                             </div>
                                             <div class="col-sm-4">
-                                                <label class="form-label">hora_entrada</label>
+                                                <label class="form-label">Hora entrada 2</label>
                                                 <input type="time" name="hora_entrada1" class="form-control"
                                                     value="{{ old('hora_entrada1', $control->hora_entrada1 ?? '') }}">
                                             </div>
-
                                             <div class="col-sm-4">
-                                                <label class="form-label">Hora de salida</label>
+                                                <label class="form-label">Hora salida 2</label>
                                                 <input type="time" name="hora_salida1" class="form-control"
                                                     value="{{ old('hora_salida1', $control->hora_salida1 ?? '') }}">
                                             </div>
@@ -289,33 +268,30 @@
                                                 <input type="text" name="herramientas" class="form-control"
                                                     value="{{ old('herramientas', $control->herramientas ?? '') }}">
                                             </div>
-
                                             <div class="col-12">
                                                 <label class="form-label">Empresa</label>
                                                 <input type="text" name="empresa" class="form-control"
                                                     value="{{ old('empresa', $control->empresa ?? '') }}">
                                             </div>
-
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <label class="form-label">Motivo</label>
-                                            <input type="text" name="motivo" class="form-control"
-                                                value="{{ old('motivo', $control->motivo ?? '') }}">
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <label class="form-label">Firma</label>
-                                            <input type="file" name="firma" class="form-control"
-                                                accept="image/png,image/jpeg,image/webp,image/heic">
-                                            @if($control->firma)
-                                            <small class="text-muted d-block mt-1">Actual:
-                                                {{ $control->firma }}</small>
-                                            @endif
+                                            <div class="col-sm-6">
+                                                <label class="form-label">Motivo</label>
+                                                <input type="text" name="motivo" class="form-control"
+                                                    value="{{ old('motivo', $control->motivo ?? '') }}">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">Firma</label>
+                                                <input type="file" name="firma" class="form-control"
+                                                    accept="image/png,image/jpeg,image/webp,image/heic">
+                                                @if($control->firma)
+                                                <small class="text-muted d-block mt-1">Actual:
+                                                    {{ $control->firma }}</small>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
 
                                 </div>
-                            </div><!-- /content -->
+                            </div><!-- /Columna derecha -->
                         </div>
                     </div>
 
@@ -326,7 +302,6 @@
                             <button type="submit" class="btn btn-success">Actualizar</button>
                         </div>
                     </div>
-
                 </form>
             </div>
 
@@ -338,7 +313,6 @@
 @section('content-admin-js')
 <script>
 $(function() {
-    // Por si algún plugin previno el comportamiento por defecto:
     $('a[data-toggle="pill"], a[data-toggle="tab"]').on('click', function(e) {
         e.preventDefault();
         $(this).tab('show');
@@ -347,8 +321,6 @@ $(function() {
 </script>
 @endsection
 
-
 @extends('backend.menus.footerjs')
 @section('content-admin-js')
-
 @endsection

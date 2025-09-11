@@ -8,5 +8,16 @@
 
 @yield('archivos-js')
 
+<noscript>
+    <style>
+    /* Si JS no está habilitado, muestra el contenido */
+    .fade-ready {
+        opacity: 1 !important;
+    }
+    </style>
+</noscript>
+
+
 </body>
+
 </html>
