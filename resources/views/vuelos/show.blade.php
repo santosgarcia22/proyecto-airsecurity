@@ -27,6 +27,8 @@
                 <dd class="col-sm-9">{{ $vuelo->numero_vuelo_llegando }} / {{ $vuelo->numero_vuelo_saliendo }}</dd>
                 <dt class="col-sm-3">Matrícula</dt>
                 <dd class="col-sm-9">{{ $vuelo->matricula }}</dd>
+                <dt class="col-sm-3">Total Pax</dt>
+                <dd class="col-sm-9">{{ $vuelo->total_pax }}</dd>
                 <dt class="col-sm-3">Operador</dt>
                 <dd class="col-sm-9">{{ optional($vuelo->operador)->nombre }}</dd>
                 <dt class="col-sm-3">Coordinador</dt>
@@ -39,6 +41,7 @@
                     Salida Itin.: {{ optional($vuelo->hora_salida_itinerario)->format('Y-m-d H:i') ?? '—' }} |
                     Pushback: {{ optional($vuelo->hora_salida_pushback)->format('Y-m-d H:i') ?? '—' }}
                 </dd>
+                
             </dl>
 
             <a class="btn btn-warning" href="{{ route('admin.vuelo.edit',$vuelo) }}">Editar</a>

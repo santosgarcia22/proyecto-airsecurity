@@ -122,16 +122,16 @@
                         <i class="fas fa-tag"></i> <!-- Ícono de etiqueta (tag) -->
 
                         <p>
-                            tipo
+                            Personas
                             <i class="fas fa-angle-left right"></i>
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ route('admin.tipo.index') }}" target="frameprincipal" class="nav-link"
+                            <a href="{{ route('admin.personas.index') }}" target="frameprincipal" class="nav-link"
                                 onclick="guardarUltimaVista(event, this.href)">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Tipo</p>
+                                <p>Registrar personas</p>
                             </a>
                         </li>
                     </ul>
@@ -266,13 +266,7 @@
                                 <p>Usuario App</p>
                             </a>
                         </li>
-                        <!-- <li class="nav-item">
-                            <a href="{{ route('reportes.panel') }}" target="frameprincipal" class="nav-link"
-                                onclick="guardarUltimaVista(event, this.href)">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Reportes</p>
-                            </a>
-                        </li> -->
+                     
                     </ul>
                 </li>
                 @endcan

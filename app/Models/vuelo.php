@@ -16,7 +16,7 @@ class vuelo extends Model
         'numero_vuelo_llegando','numero_vuelo_saliendo',
         'matricula','operador_id','posicion_llegada',
         'hora_llegada_real','hora_salida_itinerario','hora_salida_pushback',
-        'total_pax',
+        'total_pax','coordinador_id','lider_vuelo_id',
     ];
 
     // 'coordinador_id','lider_vuelo_id'
@@ -29,8 +29,8 @@ class vuelo extends Model
 
     // Relaciones
     public function operador()     { return $this->belongsTo(Operador::class, 'operador_id'); }
-    // public function coordinador()  { return $this->belongsTo(Persona::class, 'coordinador_id'); }
-    // public function liderVuelo()   { return $this->belongsTo(Persona::class, 'lider_vuelo_id'); }
+    public function coordinador()  { return $this->belongsTo(Personas::class, 'coordinador_id'); }
+    public function liderVuelo()   { return $this->belongsTo(Personas::class, 'lider_vuelo_id'); }
 
     public function accesos()      { return $this->hasMany(Accesos::class, 'vuelo_id'); }
     public function demoras()      { return $this->hasMany(demoras::class, 'vuelo_id'); }

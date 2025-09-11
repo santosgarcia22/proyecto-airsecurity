@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\vuelo;
 use App\Models\Operador;
-use App\Models\Persona;
+use App\Models\Personas;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Pagination\Paginator;
 
 class VuelosController extends Controller
 {
@@ -16,45 +17,49 @@ public function __construct()
         $this->middleware('auth'); // si usas auth
     }
 
- public function index(Request $request)
-    {
-        $q = $request->input('q');
-        $fi = $request->input('fecha_inicio');
-        $ff = $request->input('fecha_fin');
+public function index(Request $request)
+{
+    $q = $request->input('q');
+    $fi = $request->input('fecha_inicio');
+    $ff = $request->input('fecha_fin');
+    $sort = $request->input('sort', 'fecha'); // por defecto fecha
+    $direction = $request->input('direction', 'desc'); // por defecto desc
 
-        $vuelos = vuelo::with(['operador'])
-            ->when($fi, fn($q2)=>$q2->whereDate('fecha', '>=', $fi))
-            ->when($ff, fn($q2)=>$q2->whereDate('fecha', '<=', $ff))
-            ->when($q, function($query) use ($q) {
-                $query->where(function($s) use ($q){
-                    $s->where('numero_vuelo_llegando', 'like', "%$q%")
-                      ->orWhere('numero_vuelo_saliendo', 'like', "%$q%")
-                      ->orWhere('origen', 'like', "%$q%")
-                      ->orWhere('destino', 'like', "%$q%")
-                      ->orWhere('matricula', 'like', "%$q%");
-                });
-            })
-            ->orderByDesc('fecha')
-            ->paginate(15)
-            ->appends($request->query());
+    $vuelos = Vuelo::with(['operador'])
+        ->when($fi, fn($q2) => $q2->whereDate('fecha', '>=', $fi))
+        ->when($ff, fn($q2) => $q2->whereDate('fecha', '<=', $ff))
+        ->when($q, function($query) use ($q) {
+            $query->where(function($s) use ($q) {
+                $s->where('numero_vuelo_llegando', 'like', "%$q%")
+                  ->orWhere('numero_vuelo_saliendo', 'like', "%$q%")
+                  ->orWhere('origen', 'like', "%$q%")
+                  ->orWhere('destino', 'like', "%$q%")
+                  ->orWhere('matricula', 'like', "%$q%");
+            });
+        })
+        ->orderBy($sort, $direction) // 👈 ahora orden dinámico
+        ->paginate(15)
+        ->appends($request->query());
 
-        return view('vuelos.index', compact('vuelos'));
-    }
+    return view('vuelos.index', compact('vuelos'));
+}
 
 
+public function boot()
+{
+    Paginator::useBootstrapFive();
+    // o Paginator::useBootstrapFour();
+}
 
      public function create()
     {
         $operadores  = Operador::orderBy('nombre')->get();
-        // $coordinadores = Persona::where('rol','COORDINADOR')->orderBy('nombre')->get();
-        // $lideres       = Persona::where('rol','LIDER_VUELO')->orderBy('nombre')->get();
+        $coordinadores = Personas::where('rol','COORDINADOR')->orderBy('nombre')->get();
+        $lideres       = Personas::where('rol','LIDER_VUELO')->orderBy('nombre')->get();
 
-        return view('vuelos.create', compact('operadores'));
-       // return view('vuelos.create', compact('operadores','coordinadores','lideres'));
+      //  return view('vuelos.create', compact('operadores'));
+        return view('vuelos.create', compact('operadores','coordinadores','lideres'));
     }
-
-
-
 
     public function store(Request $request)
     {
@@ -71,8 +76,8 @@ public function __construct()
             'hora_salida_itinerario' => ['nullable','date'],
             'hora_salida_pushback'   => ['nullable','date'],
             'total_pax' => ['nullable','integer','min:0'],
-            // 'coordinador_id' => ['nullable', Rule::exists('personas','id')],
-            // 'lider_vuelo_id' => ['nullable', Rule::exists('personas','id')],
+            'coordinador_id' => ['nullable', Rule::exists('personas','id')],
+            'lider_vuelo_id' => ['nullable', Rule::exists('personas','id')],
         ]);
 
         $vuelo = vuelo::create($data);
@@ -84,16 +89,18 @@ public function __construct()
     public function show(Vuelo $vuelo)
     {
         $vuelo->load(['operador','tiempos','demoras','accesos']);
-        //$vuelo->load(['operador','coordinador','liderVuelo','tiempos','demoras','accesos']);
+        $vuelo->load(['operador','coordinador','liderVuelo','tiempos','demoras','accesos']);
         return view('vuelos.show', compact('vuelo'));
     }
 
     public function edit(vuelo $vuelo)
     {
         $operadores  = Operador::orderBy('nombre')->get();
-      
+        $coordinadores = Personas::where('rol','COORDINADOR')->orderBy('nombre')->get();
+        $lideres  = Personas::where('rol','LIDER_VUELO')->orderBy('nombre')->get();
 
-        return view('vuelos.edit', compact('vuelo','operadores'));
+      return view('vuelos.edit', compact('vuelo','operadores','coordinadores','lideres'));
+
     }
 
     public function update(Request $request, vuelo $vuelo)
@@ -111,8 +118,8 @@ public function __construct()
             'hora_salida_itinerario' => ['nullable','date'],
             'hora_salida_pushback'   => ['nullable','date'],
             'total_pax' => ['nullable','integer','min:0'],
-            // 'coordinador_id' => ['nullable', Rule::exists('personas','id')],
-            // 'lider_vuelo_id' => ['nullable', Rule::exists('personas','id')],
+            'coordinador_id' => ['nullable', Rule::exists('Personas','id')],
+            'lider_vuelo_id' => ['nullable', Rule::exists('Personas','id')],
         ]);
 
         $vuelo->update($data);
@@ -120,11 +127,12 @@ public function __construct()
         return redirect()->route('admin.vuelo.show', $vuelo)->with('success','Vuelo actualizado.');
     }
 
-    public function destroy(vuelo $vuelo)
-    {
-        vuelo::destroy($id);
+        public function destroy(vuelo $vuelo)
+        {
+            $vuelo->delete();
             return response()->json(['res' => true]);
-    }
+        }
+
 
 
 }

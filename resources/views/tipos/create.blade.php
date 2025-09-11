@@ -20,7 +20,7 @@ table {
     <div class="container mt-4">
         <div class="card shadow-sm">
             <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">Actualizar Tipo</h4>
+                <h4 class="mb-0">Registrar Tipo</h4>
             </div>
             <div class="card-body">
                 <form action="{{ route('admin.tipo.store') }}" method="POST">
@@ -34,7 +34,7 @@ table {
                     </div>
 
                     <div class="text-end">
-                        <button type="submit" class="btn btn-success">Actualizar    </button>
+                        <button type="submit" class="btn btn-success">Registrar</button>
                         <a href="{{ route('admin.tipo.index') }}" class="btn btn-secondary">Cancelar</a>
                     </div>
                 </form>

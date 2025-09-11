@@ -38,12 +38,43 @@ $v = $mode=='edit' ? $vuelo : null;
             </select>
         </div>
 
+
+
         <div class="form-group col-md-2">
             <label>Matrícula</label>
             <input type="text" name="matricula" class="form-control"
                 value="{{ old('matricula', $v->matricula ?? '') }}">
         </div>
     </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label>Coordinador</label>
+            <select name="coordinador_id" class="form-control">
+                <option value="">-- Seleccione --</option>
+                @foreach($coordinadores as $p)
+                <option value="{{ $p->id }}"
+                    {{ (string)old('coordinador_id', $v->coordinador_id ?? '') === (string)$p->id ? 'selected' : '' }}>
+                    {{ $p->nombre }} {{ $p->empresa ? "({$p->empresa})" : '' }}
+                </option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="form-group col-md-4">
+            <label>Líder de vuelo</label>
+            <select name="lider_vuelo_id" class="form-control">
+                <option value="">-- Seleccione --</option>
+                @foreach($lideres as $p)
+                <option value="{{ $p->id }}"
+                    {{ (string)old('lider_vuelo_id', $v->lider_vuelo_id ?? '') === (string)$p->id ? 'selected' : '' }}>
+                    {{ $p->nombre }} {{ $p->empresa ? "({$p->empresa})" : '' }}
+                </option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+
 
     <div class="form-row">
         <div class="form-group col-md-3">
@@ -98,5 +129,3 @@ $v = $mode=='edit' ? $vuelo : null;
     <ul class="mb-0">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
 </div>
 @endif
-
-
