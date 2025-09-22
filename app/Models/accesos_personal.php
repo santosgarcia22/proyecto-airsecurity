@@ -13,7 +13,7 @@ class accesos_personal extends Model
     protected $primaryKey = 'id_personal';
     protected $fillable = [
         'control_id','nombre','id',
-        'hora_entrada','hora_salida','hora_entrada1','hora_salida1',
+        'hora_entrada','hora_salida','hora_entrada1','hora_salida2',
         'herramientas','empresa','motivo','firma'
     ];
 

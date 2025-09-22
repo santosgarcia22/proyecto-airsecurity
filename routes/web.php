@@ -89,6 +89,7 @@ Route::get('/admin/vuelos/show', [VueloFrontendController::class, 'index'])->nam
 Route::get('/admin/vuelo/edit/{vuelo}', [VueloFrontendController::class, 'edit'])->name('admin.vuelo.edit');
 Route::put('/admin/vuelo/update/{vuelo}', [VueloFrontendController::class, 'update'])->name('admin.vuelo.update');
 Route::delete('/admin/vuelo/{vuelo}', [VueloFrontendController::class, 'destroy'])->name('admin.vuelo.destroy');
+Route::post('/operadores', [OperadoresController::class, 'store'])->name('admin.operador.store');
 
 
 //NUEVA VISTA VUELOS CON LAS RELACIONES DE LAS 5 TABLAS 
@@ -187,8 +188,6 @@ Route::get('/reportes/vuelos/excel', [ReportController::class, 'exportarVuelosEx
 Route::get('/reportes/ubicaciones', [ReportController::class, 'reporteUbicaciones'])->name('reportes.ubicaciones');
 Route::get('/reportes/usuariosapp', [ReportController::class, 'reporteUsuariosApp'])->name('reportes.usuariosapp');
 
-
-
  // Listado con filtros
 Route::get('/control-aeronave', [ReportController::class, 'controlAeronaveIndex'])->name('reportes.control_aeronave.index');
     // PDF por registro
@@ -197,35 +196,14 @@ Route::get('/control-aeronave/{id}/pdf', [ReportController::class, 'controlAeron
 Route::get('/reportes/control-aeronave/{id}/pdf',[ReportController::class, 'pdf'])->name('reportes.control_aeronave.pdf');
 
 Route::get('/reportes/control-aeronave/{id}/pdf', [ReportController::class, 'controlAeronavePdf'])->name('reportes.control_aeronave.pdf');
-
 // (Opcional) vista HTML para previsualizar antes de exportar
 Route::get('/reportes/control-aeronave/{id}/preview', [ReportController::class, 'controlAeronavePreview'])->name('reportes.control_aeronave.preview');
 
 
 
-//ELIMINAR DESPUES NO SON UTILES
-// Route::get('/admin/controlaeronave', [ControlAeronaveController::class, 'index1'])
-//     ->name('admin.controlaeronave.index');
-// Route::get('/admin/controlaeronave/{control}/edit', [ControlAeronaveController::class, 'edit1'])
-//     ->name('admin.controlaeronave.edit');
-// Route::delete('/admin/controlaeronave/{control}', [ControlAeronaveController::class, 'destroy1'])
-//     ->name('admin.controlaeronave.destroy');
-// // ACCESOS (modal)
-// Route::get('/admin/controlaeronave/{control}/accesos', [ControlAeronaveController::class, 'accesosIndex'])
-//     ->name('accesos-personal.index');
-// Route::post('/admin/controlaeronave/accesos', [ControlAeronaveController::class, 'accesosStore'])
-//     ->name('accesos-personal.store');
-// Route::delete('/admin/controlaeronave/accesos/{acceso}', [ControlAeronaveController::class, 'accesosDestroy'])
-//     ->name('accesos-personal.destroy');
-
-// // LISTA (usa tu index.blade.php)
-// Route::get('/admin/controlaeronave', [ControlAeronaveController::class, 'index'])->name('admin.controlaeronave.index');//no tocar funciona
-
-// Route::post('/admin/controlaeronave', [ControlAeronaveController::class, 'store1'])
-//     ->name('admin.controlaeronave.store');
-
 
 // EDIT / UPDATE / DESTROY (cuando los habilites)
+
 Route::get('/admin/controlaeronave/{vuelo}/edit', [ControlAeronaveController::class, 'edit'])->name('admin.controlaeronave.edit');
 Route::put('/admin/controlaeronave/{vuelo}',      [ControlAeronaveController::class, 'update'])->name('admin.controlaeronave.update');
 

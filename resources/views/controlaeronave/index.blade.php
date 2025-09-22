@@ -323,9 +323,6 @@ body {
         transform: rotate(360deg);
     }
 }
-
-
-
 </style>
 @endsection
 
@@ -689,55 +686,6 @@ background:white;z-index:9999;display:flex;align-items:center;justify-content:ce
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
 {{-- ===== Overlay global: entra/volver ===== --}}
-<!-- <script>
-    /* Quita el loader cuando:
-    - terminó window.load
-    - y confirmamos en 1–2 frames que el CSS ya está aplicado
-    (fail-safe cortito de 300ms)
-    */
-    (function() {
-        const $loader = $('#loaderGlobal');
-        const $tabla = $('#tablaContenido');
-
-        // Volver vía bfcache: la página ya está pintada.
-        window.addEventListener('pageshow', (e) => {
-            if (e.persisted) {
-                $loader.hide();
-                $tabla.show();
-            }
-        });
-
-        function stylesAppliedOK() {
-            const el = document.querySelector('.card-titlebar');
-            if (!el) return true;
-            const cs = getComputedStyle(el);
-            return cs.backgroundImage && cs.backgroundImage !== 'none';
-        }
-
-        function waitCSSApplied(maxMs = 300) {
-            return new Promise((resolve) => {
-                const t0 = performance.now();
-                (function tick() {
-                    if (stylesAppliedOK()) return resolve();
-                    if (performance.now() - t0 > maxMs) return resolve(); // fail-safe corto
-                    requestAnimationFrame(tick);
-                })();
-            });
-        }
-
-        $(window).on('load', async function() {
-            // pequeño colchón para que Bootstrap/AdminLTE asienten layout
-            await waitCSSApplied(300);
-            // doble rAF para asegurar el siguiente paint estable
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    $loader.fadeOut(200, () => $tabla.fadeIn(200));
-                });
-            });
-        });
-    })();
-</script> -->
-
 <script>
 $(function() {
     // ✅ Mostrar loader antes de cargar tabla
@@ -887,6 +835,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <script src="{{ asset('js/delete.js') }}"></script>
 <script src="{{ asset('js/axios.min.js') }}"></script>
 <script src="{{ asset('js/toastr.min.js') }}"></script>
+
 
 <script>
 $(window).on('load', function() {

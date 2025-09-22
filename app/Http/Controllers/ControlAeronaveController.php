@@ -19,7 +19,7 @@ class ControlAeronaveController extends Controller
      * =========================== */
     public function index(Request $request)
 {
-    $perPage = (int) $request->input('per_page', 10);
+    $perPage = (int) $request->input('per_page', 5);
 
     $q = vuelo::query()
         ->leftJoin('tiempos_operativos as t', 't.vuelo_id', '=', 'vuelos.id')
@@ -109,99 +109,8 @@ class ControlAeronaveController extends Controller
         return response()->json($rows);
     }
 
-   
 
-    public function accesosDestroy(Accesos $acceso)
-    {
-        if ($acceso->firma_path && Storage::disk('public')->exists($acceso->firma_path)) {
-            Storage::disk('public')->delete($acceso->firma_path);
-        }
-        $acceso->delete();
-        return response()->json(['ok' => true]);
-    }
-
- // Edit con Route Model Binding {vuelo}
-    public function edit(vuelo $vuelo)
-    {
-        // Alias para que la vista pueda usar id_control_aeronave
-        $vuelo->id_control_aeronave = $vuelo->id;
-
-        // Si quieres, puedes cargar relaciones
-        // $vuelo->load('tiemposOperativos');
-
-        return view('controlaeronave.edit', [
-            'control' => $vuelo,    // 👈 la vista recibirá $control
-        ]);
-    }
-
-
-     public function update(Request $request, vuelo $vuelo)
-    {
-        // Valida lo básico del vuelo
-        $dataVuelo = $request->validate([
-            'fecha'             => ['nullable','date'],
-            'origen'            => ['nullable','string','max:100'],
-            'destino'           => ['nullable','string','max:100'],
-            'numero_vuelo'      => ['nullable','string','max:50'],
-            'hora_llegada'      => ['nullable'],
-            'posicion_llegada'  => ['nullable','string','max:100'],
-            'matricula_operador'=> ['nullable','string','max:100'],
-            'coordinador_lider' => ['nullable','string','max:150'],
-            'total_pax'         => ['nullable','integer','min:0'],
-            'hora_real_salida'  => ['nullable'],
-        ]);
-
-        // Mapea a columnas reales de tu tabla vuelos
-        $vuelo->update([
-            'fecha'               => $dataVuelo['fecha'] ?? $vuelo->fecha,
-            'origen'              => $dataVuelo['origen'] ?? $vuelo->origen,
-            'destino'             => $dataVuelo['destino'] ?? $vuelo->destino,
-            'numero_vuelo_llegando' => $dataVuelo['numero_vuelo'] ?? $vuelo->numero_vuelo_llegando, // ajusta según tu modelo
-            'hora_llegada_real'   => $dataVuelo['hora_llegada'] ?? $vuelo->hora_llegada_real,
-            'posicion_llegada'    => $dataVuelo['posicion_llegada'] ?? $vuelo->posicion_llegada,
-            'matricula'           => $dataVuelo['matricula_operador'] ?? $vuelo->matricula,
-            'coordinador_lider'   => $dataVuelo['coordinador_lider'] ?? $vuelo->coordinador_lider,
-            'total_pax'           => $dataVuelo['total_pax'] ?? $vuelo->total_pax,
-            'hora_salida_pushback'=> $dataVuelo['hora_real_salida'] ?? $vuelo->hora_salida_pushback,
-        ]);
-
-        // ===== TIEMPOS (si los editas en esta vista) =====
-        $t = [
-            'desabordaje_inicio'       => $request->input('desabordaje_inicio'),
-            'desabordaje_fin'          => $request->input('desabordaje_fin'),
-            'inspeccion_cabina_inicio' => $request->input('inspeccion_cabina_inicio'),
-            'inspeccion_cabina_fin'    => $request->input('inspeccion_cabina_fin'),
-            'aseo_ingreso'             => $request->input('aseo_ingreso'),
-            'aseo_salida'              => $request->input('aseo_salida'),
-            'tripulacion_ingreso'      => $request->input('tripulacion_ingreso'),
-            'abordaje_inicio'          => $request->input('abordaje_inicio'),
-            'abordaje_fin'             => $request->input('abordaje_fin'),
-            'cierre_puerta'            => $request->input('cierre_puerta'), // 👈 OJO con el nombre (ver nota abajo)
-        ];
-        if (collect($t)->filter(fn($v)=>$v!==null && $v!=='')->isNotEmpty()) {
-            TiemposOperativos::updateOrCreate(['vuelo_id'=>$vuelo->id], $t);
-        }
-
-        // ===== DEMORA (si manejas una única por vuelo) =====
-        if ($request->filled('demora_tiempo') || $request->filled('demora_motivo')) {
-            demoras::updateOrCreate(
-                ['vuelo_id'=>$vuelo->id],
-                [
-                    'minutos' => (int)$request->input('demora_tiempo', 0),
-                    'motivo'  => $request->input('demora_motivo'),
-                    'agente_id' => $request->input('agente_id'),
-                ]
-            );
-        }
-
-        return redirect()
-            ->route('admin.controlaeronave.index')
-            ->with('success','Control de aeronave actualizado.');
-    }
-
-
-
-    public function create1(Request $request)
+        public function create1(Request $request)
    {
             $vuelo = null;
             if ($request->filled('vuelo_id')) {
@@ -212,13 +121,9 @@ class ControlAeronaveController extends Controller
             return view('controlaeronave.create', compact('operadores','vuelo'));
     }
 
-
-   public function store1(Request $request)
+      public function store1(Request $request)
     {
-        // DEBUG temporal: mira qué llega
-        // logger()->info('payload-create', $request->all());
-       // dd($request->only('vuelo_id','tiempos','demoras'));
-
+    
         $data = $request->validate([
             'vuelo_id' => 'required|exists:vuelos,id',
 
@@ -279,6 +184,55 @@ class ControlAeronaveController extends Controller
             ->route('admin.controlaeronave.index', ['open' => $data['vuelo_id']])
             ->with('success', 'Tiempos y demora registrados para el vuelo.');
     }
+
+
+
+    public function accesosDestroy(Accesos $acceso)
+    {
+        if ($acceso->firma_path && Storage::disk('public')->exists($acceso->firma_path)) {
+            Storage::disk('public')->delete($acceso->firma_path);
+        }
+        $acceso->delete();
+        return response()->json(['ok' => true]);
+    }
+
+ // Edit con Route Model Binding {vuelo}
+    public function edit($id)
+    {
+        // Traer el vuelo
+        $vuelo = Vuelo::findOrFail($id);
+
+        // Traer tiempos operativos vinculados
+        $tiempos = TiemposOperativos::where('vuelo_id', $id)->first();
+
+        // Traer demoras vinculadas
+        $demoras = Demoras::where('vuelo_id', $id)->first();
+
+        return view('controlaeronave.edit', compact('vuelo', 'tiempos', 'demoras'));
+    }
+
+
+     public function update(Request $request, $id)
+    {
+        // Actualizar tiempos
+        $tiempos = TiemposOperativos::where('vuelo_id', $id)->first();
+        if ($tiempos) {
+            $tiempos->update($request->input('tiempos', []));
+        }
+
+        // Actualizar demoras
+        $demoras = Demoras::where('vuelo_id', $id)->first();
+        if ($demoras) {
+            $demoras->update($request->input('demoras', []));
+        }
+
+        return redirect()->route('admin.controlaeronave.index')
+                         ->with('success', 'Control de aeronave actualizado correctamente.');
+    }
+
+
+
+
 
 
 }
