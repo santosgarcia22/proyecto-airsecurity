@@ -9,12 +9,11 @@ class OperadoresController extends Controller
 {
     //
 
- public function index()
-    {
-        $operadores = Operador::orderBy('nombre')->get();
-        return response()->json($operadores); // para cargar en el modal con AJAX si quieres
-    }
-
+    public function index()
+        {
+            $operadores = Operador::orderBy('nombre')->get();
+            return response()->json($operadores); // para cargar en el modal con AJAX si quieres
+        }
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -24,13 +23,22 @@ class OperadoresController extends Controller
 
         $operador = Operador::create($data);
 
+        if ($request->ajax()) {
+            return response()->json($operador);
+        }
+
         return redirect()->back()->with('success', 'Operador agregado.');
     }
 
-   public function destroy(\App\Models\Operador $operador)
+    public function destroy(string $id)
     {
-        $operador->delete();
-        return response()->json(['ok' => true]);
+        $deleted = Operador::destroy($id);
+
+        if ($deleted) {
+            return response()->json(['ok' => true]);
+        }
+
+        return response()->json(['ok' => false], 400);
     }
 
 

@@ -256,7 +256,8 @@ class ReportController extends Controller
     {
         $q = vuelo::query()
             ->leftJoin('tiempos_operativos as t', 't.vuelo_id', '=', 'vuelos.id')
-            ->leftJoin('demoras as d', 'd.vuelo_id', '=', 'vuelos.id');
+            ->leftJoin('demoras as d', 'd.vuelo_id', '=', 'vuelos.id')
+            ->leftJoin('personas as p', 'p.id', '=', 'vuelos.coordinador_id'); // 👈 Relación con personas
 
         // Filtros
         if ($request->filled('fecha_inicio') && $request->filled('fecha_fin')) {
@@ -270,25 +271,24 @@ class ReportController extends Controller
             $term = $request->input('q');
             $q->where(function ($w) use ($term) {
                 $w->where('vuelos.numero_vuelo_llegando', 'like', "%{$term}%")
-                  ->orWhere('vuelos.numero_vuelo_saliendo', 'like', "%{$term}%")
-                  ->orWhere('vuelos.origen', 'like', "%{$term}%")
-                  ->orWhere('vuelos.destino', 'like', "%{$term}%")
-                  ->orWhere('vuelos.matricula', 'like', "%{$term}%")
-                  // también buscar por campos de accesos
-                  ->orWhereExists(function($s) use ($term) {
-                      $s->selectRaw(1)
+                ->orWhere('vuelos.numero_vuelo_saliendo', 'like', "%{$term}%")
+                ->orWhere('vuelos.origen', 'like', "%{$term}%")
+                ->orWhere('vuelos.destino', 'like', "%{$term}%")
+                ->orWhere('vuelos.matricula', 'like', "%{$term}%")
+                ->orWhereExists(function($s) use ($term) {
+                    $s->selectRaw(1)
                         ->from('accesos')
                         ->whereColumn('accesos.vuelo_id', 'vuelos.id')
                         ->where(function($z) use ($term){
                             $z->where('accesos.nombre', 'like', "%{$term}%")
-                              ->orWhere('accesos.empresa', 'like', "%{$term}%")
-                              ->orWhere('accesos.motivo_entrada', 'like', "%{$term}%");
+                            ->orWhere('accesos.empresa', 'like', "%{$term}%")
+                            ->orWhere('accesos.motivo_entrada', 'like', "%{$term}%");
                         });
-                  });
+                });
             });
         }
 
-        // Selección (alias para que tu blade no cambie mucho)
+        // Selección
         $data = $q->select([
                 'vuelos.id',
                 'vuelos.fecha',
@@ -296,16 +296,27 @@ class ReportController extends Controller
                 'vuelos.origen',
                 'vuelos.destino',
                 'vuelos.matricula as matricula_operador',
-                // coordinador_lider ya no existe en el nuevo esquema (si lo necesitas, añade la relación/persona)
-                \DB::raw("'' as coordinador_lider"),
+                'p.nombre as coordinador_lider',   // 👈 nombre del coordinador
+                'p.rol as rol_coordinador'         // 👈 opcional, si quieres ver el rol
             ])
-            ->groupBy('vuelos.id','vuelos.fecha','vuelos.numero_vuelo_llegando','vuelos.numero_vuelo_saliendo','vuelos.origen','vuelos.destino','vuelos.matricula')
+            ->groupBy(
+                'vuelos.id',
+                'vuelos.fecha',
+                'vuelos.numero_vuelo_llegando',
+                'vuelos.numero_vuelo_saliendo',
+                'vuelos.origen',
+                'vuelos.destino',
+                'vuelos.matricula',
+                'p.nombre',
+                'p.rol'
+            )
             ->orderByDesc('vuelos.fecha')
             ->orderByDesc('vuelos.id')
-            ->paginate(10);
+            ->paginate(5);
 
         return view('reportes.control_aeronave.index', compact('data'));
     }
+
 
 
    /* =======================================================
@@ -352,7 +363,8 @@ class ReportController extends Controller
             'agente_nombre'            => null,
             'agente_id'                => null,
             'agente_firma'             => null,
-            'coordinador_lider'        => null,
+            'coordinador_lider'        => optional($vuelo->coordinador)->nombre,
+
         ];
 
         // Filas de personas (accesos) adaptadas al PDF

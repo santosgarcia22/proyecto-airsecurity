@@ -330,14 +330,19 @@ background:white;z-index:9999;display:flex;align-items:center;justify-content:ce
                 </button>
             </div>
             <div class="modal-body">
-                <form id="formOperador" class="row g-2 mb-3">
+                <form id="formOperador" action="{{ route('admin.operador.store') }}" method="POST" class="row g-2 mb-3">
                     @csrf
-                    <div class="col-md-3"><input type="text" name="codigo" class="form-control" placeholder="Código"
-                            required></div>
-                    <div class="col-md-6"><input type="text" name="nombre" class="form-control"
-                            placeholder="Nombre operador" required></div>
-                    <div class="col-md-3"><button class="btn btn-success w-100">Agregar</button></div>
+                    <div class="col-md-3">
+                        <input type="text" name="codigo" class="form-control" placeholder="Código" required>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" name="nombre" class="form-control" placeholder="Nombre operador" required>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-success w-100">Agregar</button>
+                    </div>
                 </form>
+
 
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped align-middle" id="tablaOperadores">
@@ -359,6 +364,7 @@ background:white;z-index:9999;display:flex;align-items:center;justify-content:ce
                                         data-token="{{ csrf_token() }}">
                                         Eliminar
                                     </button>
+
                                 </td>
                             </tr>
                             @endforeach
@@ -374,6 +380,8 @@ background:white;z-index:9999;display:flex;align-items:center;justify-content:ce
 <!-- ======= SCRIPTS (tu misma lógica) ======= -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
+<script src="{{ asset('js/delete.js') }}"></script>
 
 <script>
 $(function() {
@@ -429,5 +437,43 @@ $(document).on('click', 'th[data-col]', function() {
     // Recargar tabla vía AJAX con sort + direction
     let datos = $('#formFiltros').serialize() + '&sort=' + col + '&direction=' + newDir;
     cargarTabla("{{ route('admin.vuelo.index') }}", datos);
+});
+</script>
+
+<script>
+$(function() {
+    // 🚀 AJAX para crear operador sin recargar
+    $('#formOperador').on('submit', function(e) {
+        e.preventDefault();
+
+        let form = $(this);
+        let url = form.attr('action');
+        let datos = form.serialize();
+
+        $.post(url, datos)
+            .done(function(res) {
+                // Agregar la nueva fila a la tabla
+                $('#tablaOperadores tbody').append(`
+                    <tr data-id="${res.id}">
+                        <td>${res.codigo}</td>
+                        <td>${res.nombre}</td>
+                        <td class="text-center">
+                               <button class="btn btn-danger btn-sm btn-eliminar"
+                                    data-url="/admin/operadores/${res.id}"
+                                    data-token="{{ csrf_token() }}">
+                                    Eliminar
+                                </button>
+                        </td>
+                    </tr>
+                `);
+
+                // limpiar inputs para seguir agregando
+                form.trigger('reset');
+            })
+            .fail(function(xhr) {
+                alert('Error al agregar operador');
+                console.log(xhr.responseText);
+            });
+    });
 });
 </script>

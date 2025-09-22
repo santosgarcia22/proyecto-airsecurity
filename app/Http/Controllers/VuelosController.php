@@ -38,8 +38,8 @@ public function index(Request $request)
             });
         })
         ->orderBy($sort, $direction) // 👈 ahora orden dinámico
-        ->paginate(15)
-        ->appends($request->query());
+        ->paginate(5)
+        ->appends($request->query());   
 
     return view('vuelos.index', compact('vuelos'));
 }

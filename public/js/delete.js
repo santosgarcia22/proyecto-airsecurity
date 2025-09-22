@@ -1,9 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
   document.body.addEventListener('click', function (e) {
-    if (e.target.classList.contains('btn-eliminar')) {
+    const btn = e.target.closest('.btn-eliminar'); // 👈 aquí el cambio importante
+    if (btn) {
       e.preventDefault();
 
-      const btn   = e.target;
       const url   = btn.getAttribute('data-url');
       const token = btn.getAttribute('data-token') || document.querySelector('meta[name="csrf-token"]').content;
       const row   = btn.closest('tr');
